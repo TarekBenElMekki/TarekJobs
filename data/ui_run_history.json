@@ -1,0 +1,32 @@
+[
+  {
+    "id": "legacy_initial_dry_run",
+    "status": "success",
+    "started_at": "2026-08-14T22:04:50.700663",
+    "finished_at": "2026-08-14T22:04:50.700663",
+    "limit": 93,
+    "summary": {
+      "raw_jobs": 93,
+      "new_jobs": 91,
+      "duplicates": 2,
+      "seen_again": 0,
+      "stale": 4,
+      "collector_failures": 0,
+      "live_exported": 87
+    },
+    "sources": {
+      "arbeitnow": {
+        "status": "success"
+      },
+      "jobicy": {
+        "status": "success"
+      },
+      "keejob": {
+        "status": "success"
+      },
+      "remotive": {
+        "status": "success"
+      }
+    }
+  }
+]

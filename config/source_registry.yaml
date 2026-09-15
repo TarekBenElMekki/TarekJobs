@@ -1,0 +1,229 @@
+sources:
+  keejob:
+    market: Tunisia
+    method: HTML + detail pages
+    state: active
+    priority: high
+    note: Tunisian job board; public pages only.
+  jobicy:
+    market: International remote
+    method: API
+    state: active
+    priority: normal
+    note: Remote-job discovery source.
+  remotive:
+    market: International remote
+    method: API
+    state: active
+    priority: normal
+    note: Remote-job discovery source.
+  arbeitnow:
+    market: International / Europe
+    method: API
+    state: active
+    priority: normal
+    note: Aggregated public job feed.
+  tanitjobs:
+    market: Tunisia
+    method: HTML
+    state: planned
+    priority: high
+    note: High-priority Tunisia coverage.
+  fabskill:
+    market: Tunisia
+    method: HTML / API discovery
+    state: planned
+    priority: high
+    note: High-priority Tunisia coverage.
+  linkedin_tunisia:
+    market: Tunisia
+    method: Browser / public discovery
+    state: planned
+    priority: high
+    note: Large local-market discovery source.
+  indeed_tunisia:
+    market: Tunisia
+    method: Browser / public discovery
+    state: planned
+    priority: high
+    note: Local-market discovery source.
+  optioncarriere_tunisia:
+    market: Tunisia
+    method: HTML
+    state: planned
+    priority: high
+    note: Tunisia aggregator coverage.
+  company_careers_tunisia:
+    market: Tunisia
+    method: Company career pages
+    state: planned
+    priority: high
+    note: Direct employer vacancies; preferred canonical source when available.
+  recruitment_agencies_tunisia:
+    market: Tunisia
+    method: Company / agency pages
+    state: planned
+    priority: high
+    note: Recruitment-agency coverage around Greater Tunis.
+  universities_research_tunisia:
+    market: Tunisia
+    method: Institution pages
+    state: planned
+    priority: normal
+    note: Research and university technical roles.
+  hospitals_medical_tunisia:
+    market: Tunisia
+    method: Institution / company pages
+    state: planned
+    priority: high
+    note: Biomedical, medical-device and health-tech opportunities.
+  linkedin_global:
+    market: Worldwide jobs
+    method: Browser / public discovery
+    state: planned
+    priority: normal
+    note: Discovery source for international engineering roles; verify on employer page.
+  indeed_global:
+    market: Worldwide jobs
+    method: Browser / public discovery
+    state: planned
+    priority: normal
+    note: Discovery source for international engineering roles; verify open status before application.
+  glassdoor:
+    market: Worldwide jobs
+    method: Browser / public discovery
+    state: planned
+    priority: normal
+    note: Discovery source; direct employer vacancy preferred as canonical URL.
+  google_jobs_discovery:
+    market: Tunisia + remote
+    method: Search discovery
+    state: planned
+    priority: high
+    note: Discovery layer for vacancies not found in direct feeds.
+  greenhouse:
+    market: Worldwide / company ATS
+    method: ATS
+    state: planned
+    priority: high
+    note: Direct company ATS vacancies.
+  lever:
+    market: Worldwide / company ATS
+    method: ATS
+    state: planned
+    priority: high
+    note: Direct company ATS vacancies.
+  ashby:
+    market: Worldwide / company ATS
+    method: ATS
+    state: planned
+    priority: high
+    note: Direct company ATS vacancies.
+  smartrecruiters:
+    market: Tunisia + international
+    method: ATS
+    state: planned
+    priority: high
+    note: Direct employer ATS vacancies.
+  workable:
+    market: Tunisia + international
+    method: ATS
+    state: planned
+    priority: normal
+    note: Direct employer ATS vacancies.
+  teamtailor:
+    market: Worldwide / company ATS
+    method: ATS
+    state: planned
+    priority: normal
+    note: Direct employer ATS vacancies.
+  workday:
+    market: Tunisia + international
+    method: ATS / browser
+    state: planned
+    priority: high
+    note: Company Workday career sites.
+  remoteok:
+    market: International remote
+    method: Public feed / HTML
+    state: planned
+    priority: normal
+    note: Remote-only discovery.
+  weworkremotely:
+    market: International remote
+    method: Public feed / HTML
+    state: planned
+    priority: normal
+    note: Remote-only discovery.
+  wellfound:
+    market: International remote
+    method: Browser / public discovery
+    state: planned
+    priority: normal
+    note: Startup opportunities accessible remotely.
+  eu_careers:
+    market: Europe
+    method: Institution / career sites
+    state: planned
+    priority: low
+    note: Retain only remotely accessible roles unless Tunisia-based.
+  un_ngo:
+    market: International / Tunisia
+    method: Institution career sites
+    state: planned
+    priority: normal
+    note: Technical and digital roles in international organizations.
+  research_university_global:
+    market: Worldwide research / PhD
+    method: Institution career sites
+    state: planned
+    priority: normal
+    note: University and research-institute jobs plus funded doctoral vacancies.
+  euraxess:
+    market: Europe / research / PhD
+    method: Public search / institution links
+    state: planned
+    priority: high
+    note: Research jobs and doctoral opportunities; verify funding and host vacancy page.
+  academictransfer:
+    market: Netherlands / research / PhD
+    method: Public listings / institution links
+    state: planned
+    priority: high
+    note: High-priority salaried Dutch PhD and research vacancies.
+  msca_doctoral_networks:
+    market: Europe / funded PhD
+    method: EURAXESS / project career pages
+    state: planned
+    priority: high
+    note: Doctoral Network researcher vacancies with employment-style funding where applicable.
+  fraunhofer_careers:
+    market: Germany / R&D
+    method: Direct institute careers
+    state: planned
+    priority: high
+    note: Direct R&D engineering and doctoral/research employment opportunities.
+  eth_careers:
+    market: Switzerland / research / PhD
+    method: Direct university careers
+    state: planned
+    priority: high
+    note: ETH research, engineering and doctoral opportunities.
+  epfl_careers:
+    market: Switzerland / research / PhD
+    method: Direct university careers
+    state: planned
+    priority: high
+    note: EPFL research, engineering and doctoral opportunities.
+  tudelft_careers:
+    market: Netherlands / research / PhD
+    method: Direct university careers
+    state: planned
+    priority: high
+    note: TU Delft salaried research/doctoral opportunities.
+  tue_careers:
+    market: Netherlands / research / PhD
+    method: Direct university careers
+    state: planned
+    priority: high
+    note: TU/e salaried research/doctoral opportunities.

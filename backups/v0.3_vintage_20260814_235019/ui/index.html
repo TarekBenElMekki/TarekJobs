@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>TarekJobs Dashboard</title>
+  <link rel="stylesheet" href="/assets/styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-mark">TJ</div>
+        <div>
+          <div class="brand-title">TarekJobs</div>
+          <div class="brand-subtitle">Market intelligence</div>
+        </div>
+      </div>
+
+      <nav class="nav" aria-label="Main navigation">
+        <button class="nav-item active" data-view="overview"><span>◫</span> Overview</button>
+        <button class="nav-item" data-view="jobs"><span>⌕</span> Jobs</button>
+        <button class="nav-item" data-view="applications"><span>◎</span> Applications</button>
+        <button class="nav-item" data-view="sources"><span>⌁</span> Sources</button>
+        <button class="nav-item" data-view="pipeline"><span>↻</span> Pipeline</button>
+        <button class="nav-item" data-view="profile"><span>◉</span> Profile</button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="connection-row">
+          <span class="status-dot" id="connectionDot"></span>
+          <span id="connectionText">Connecting…</span>
+        </div>
+        <div class="version" id="appVersion">v0.2</div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div>
+          <h1 id="viewTitle">Overview</h1>
+          <p id="viewSubtitle">Your live view of the job market and application pipeline.</p>
+        </div>
+        <div class="topbar-actions">
+          <button class="button secondary" id="refreshButton">Refresh</button>
+          <button class="button primary" id="runButton">Run collection</button>
+        </div>
+      </header>
+
+      <section class="view active" id="view-overview">
+        <div class="metrics-grid" id="overviewMetrics"></div>
+
+        <div class="two-column">
+          <section class="panel">
+            <div class="panel-head">
+              <div>
+                <h2>Top opportunities</h2>
+                <p>Highest-ranked live jobs after your eligibility gates.</p>
+              </div>
+              <button class="text-button" data-go="jobs">View all</button>
+            </div>
+            <div id="topJobs" class="job-list compact"></div>
+          </section>
+
+          <section class="panel">
+            <div class="panel-head">
+              <div>
+                <h2>Application funnel</h2>
+                <p>Track progress from discovery to offer.</p>
+              </div>
+            </div>
+            <div id="funnel"></div>
+          </section>
+        </div>
+
+        <div class="two-column">
+          <section class="panel">
+            <div class="panel-head">
+              <div>
+                <h2>Source coverage</h2>
+                <p>What each collector currently contributes.</p>
+              </div>
+              <button class="text-button" data-go="sources">Details</button>
+            </div>
+            <div id="sourceOverview" class="source-mini-grid"></div>
+          </section>
+
+          <section class="panel">
+            <div class="panel-head">
+              <div>
+                <h2>Recently discovered</h2>
+                <p>Newest canonical jobs added to your market database.</p>
+              </div>
+            </div>
+            <div id="recentJobs" class="activity-list"></div>
+          </section>
+        </div>
+      </section>
+
+      <section class="view" id="view-jobs">
+        <section class="panel filters-panel">
+          <div class="filters-grid">
+            <label>
+              <span>Search</span>
+              <input id="jobsSearch" type="search" placeholder="Title, company, location, skills…" />
+            </label>
+            <label>
+              <span>Minimum score</span>
+              <select id="jobsMinScore">
+                <option value="0">All scores</option>
+                <option value="30">30+</option>
+                <option value="40">40+</option>
+                <option value="50">50+</option>
+                <option value="60">60+</option>
+                <option value="65">65+ shortlist</option>
+                <option value="75">75+</option>
+              </select>
+            </label>
+            <label>
+              <span>Source</span>
+              <select id="jobsSource"><option value="all">All sources</option></select>
+            </label>
+            <label>
+              <span>Status</span>
+              <select id="jobsStatus"><option value="all">All statuses</option></select>
+            </label>
+            <label>
+              <span>Remote</span>
+              <select id="jobsRemote">
+                <option value="all">All</option>
+                <option value="yes">Remote only</option>
+                <option value="no">On-site only</option>
+              </select>
+            </label>
+            <label>
+              <span>Freshness</span>
+              <select id="jobsFreshness">
+                <option value="live">Live</option>
+                <option value="all">Live + stale</option>
+                <option value="stale">Stale only</option>
+              </select>
+            </label>
+            <label>
+              <span>Sort</span>
+              <select id="jobsSort">
+                <option value="score">Best match</option>
+                <option value="newest">Newest posting</option>
+                <option value="first_seen">Recently discovered</option>
+                <option value="updated">Recently updated</option>
+              </select>
+            </label>
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-head">
+            <div>
+              <h2>Market listings</h2>
+              <p id="jobsCount">Loading…</p>
+            </div>
+          </div>
+          <div id="jobsTable" class="jobs-table"></div>
+          <div class="pagination">
+            <button class="button secondary" id="jobsPrev">Previous</button>
+            <span id="jobsPage">Page 1</span>
+            <button class="button secondary" id="jobsNext">Next</button>
+          </div>
+        </section>
+      </section>
+
+      <section class="view" id="view-applications">
+        <div class="metrics-grid" id="applicationMetrics"></div>
+        <section class="panel">
+          <div class="panel-head">
+            <div>
+              <h2>Application board</h2>
+              <p>Jobs move here once you begin acting on them.</p>
+            </div>
+          </div>
+          <div id="applicationBoard" class="kanban"></div>
+        </section>
+      </section>
+
+      <section class="view" id="view-sources">
+        <div class="metrics-grid" id="sourceMetrics"></div>
+        <section class="panel">
+          <div class="panel-head">
+            <div>
+              <h2>Collectors</h2>
+              <p>Coverage, polling limits, and current contribution to the market database.</p>
+            </div>
+          </div>
+          <div id="sourcesGrid" class="sources-grid"></div>
+        </section>
+      </section>
+
+      <section class="view" id="view-pipeline">
+        <div class="two-column pipeline-layout">
+          <section class="panel">
+            <div class="panel-head">
+              <div>
+                <h2>Collection control</h2>
+                <p>Launch a respectful polling run and watch it source by source.</p>
+              </div>
+            </div>
+            <div class="run-controls">
+              <label>
+                <span>Maximum raw listings</span>
+                <input id="runLimit" type="number" min="1" max="1000" value="100" />
+              </label>
+              <button class="button primary large" id="runButtonPipeline">Start collection</button>
+              <p class="helper" id="runEligibilityText">Checking source intervals…</p>
+            </div>
+
+            <div class="run-status-card" id="runStatusCard">
+              <div class="run-status-top">
+                <div>
+                  <div class="eyebrow">Current run</div>
+                  <strong id="runPhase">Idle</strong>
+                </div>
+                <span class="badge neutral" id="runStatusBadge">idle</span>
+              </div>
+              <div id="runSourceProgress" class="source-progress"></div>
+              <div id="runSummary" class="run-summary"></div>
+            </div>
+          </section>
+
+          <section class="panel">
+            <div class="panel-head">
+              <div>
+                <h2>Live log</h2>
+                <p>Recent output from the active collector process.</p>
+              </div>
+            </div>
+            <pre id="runLogs" class="log-console">No UI-managed run yet.</pre>
+          </section>
+        </div>
+
+        <section class="panel">
+          <div class="panel-head">
+            <div>
+              <h2>Run history</h2>
+              <p>The last UI-launched collection runs.</p>
+            </div>
+          </div>
+          <div id="runHistory" class="history-list"></div>
+        </section>
+      </section>
+
+      <section class="view" id="view-profile">
+        <div class="two-column">
+          <section class="panel">
+            <div class="panel-head">
+              <div>
+                <h2>Matching profile</h2>
+                <p>The structured profile used by the ranking engine.</p>
+              </div>
+            </div>
+            <div id="profileSummary"></div>
+          </section>
+          <section class="panel">
+            <div class="panel-head">
+              <div>
+                <h2>Ranking configuration</h2>
+                <p>Current thresholds and market rules.</p>
+              </div>
+            </div>
+            <div id="settingsSummary"></div>
+          </section>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div class="modal-backdrop hidden" id="jobModal">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="jobModalTitle">
+      <div class="modal-head">
+        <div>
+          <div class="eyebrow" id="jobModalCompany"></div>
+          <h2 id="jobModalTitle">Job</h2>
+        </div>
+        <button class="icon-button" id="closeJobModal" aria-label="Close">×</button>
+      </div>
+      <div class="modal-body" id="jobModalBody"></div>
+    </div>
+  </div>
+
+  <div class="toast hidden" id="toast" role="status"></div>
+
+  <script src="/assets/app.js" defer></script>
+</body>
+</html>

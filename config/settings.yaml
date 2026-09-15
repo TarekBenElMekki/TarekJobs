@@ -1,0 +1,52 @@
+project:
+  name: TarekJobs
+  version: 0.5.0
+  edition: Global Opportunity Core
+collection:
+  max_jobs_per_dry_run: 250
+  request_timeout_seconds: 25
+  user_agent: TarekJobs/0.1 (personal job-search research; respectful polling)
+  stale_after_days: 45
+  preserve_stale_jobs: true
+  recheck_removed_jobs: false
+matching:
+  tarek_fit_weights:
+    technical: 0.3
+    experience: 0.2
+    education: 0.1
+    domain: 0.1
+    visa: 0.1
+    salary: 0.1
+    location: 0.05
+    language: 0.05
+  priority_thresholds:
+    A: 80
+    B: 65
+    C: 50
+    stretch: 35
+  eligibility_is_separate_from_fit: true
+  shortlist_threshold: 65
+  unknown_salary_policy: keep_and_flag
+  overall_weights:
+    technical: 0.45
+    eligibility: 0.2
+    location: 0.2
+    experience: 0.15
+  preferred_currency: TND
+  part_time_min_monthly_tnd: 1500
+  ranking_caps:
+    non_target_title: 25
+    international_onsite: 15
+    remote_geo_incompatible: 30
+    hard_eligibility: 15
+    senior_title: 30
+    three_years: 40
+    four_plus_years: 25
+    weak_technical: 30
+    local_outside_allowed: 15
+storage:
+  sqlite_path: data/jobs.db
+  export_top_matches_csv: data/exports/top_matches.csv
+logging:
+  level: INFO
+  directory: logs

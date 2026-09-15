@@ -1,0 +1,60 @@
+# TarekJobs
+
+Personal job-market aggregation and matching prototype.
+
+## V0.1 scope
+
+The first dry run deliberately uses only a few small, low-friction collectors:
+
+- Jobicy public remote-jobs API
+- Remotive public remote-jobs API
+- Arbeitnow public job-board API
+- Keejob public HTML category pages, only when robots.txt allows the request
+
+The pipeline:
+
+1. fetches a maximum of 100 raw listings;
+2. stores raw snapshots under `data/raw/`;
+3. normalizes each source into one `JobRecord` model;
+4. scores technical, eligibility, location and experience fit separately;
+5. deduplicates canonical jobs while preserving every source URL;
+6. stores all jobs in SQLite, including poor matches;
+7. marks postings older than 45 days as stale when a publication date exists;
+8. exports ranked live jobs to `data/exports/top_matches.csv`.
+
+No API keys, paid AI model, account logins, CAPTCHA bypass, Playwright, or automated job applications are used in this first version.
+
+## Run again
+
+Open PowerShell in the project folder:
+
+```powershell
+.\.venv\Scripts\python.exe -m src.main dry-run --limit 100
+```
+
+Normal runs respect each source's configured minimum poll interval.
+
+## Tests
+
+```powershell
+.\.venv\Scripts\python.exe -m pytest -q
+```
+
+## Database
+
+SQLite database: `data/jobs.db`
+
+Main tables:
+- `jobs`
+- `job_sources`
+
+Every job begins with `application_status = discovered`.
+
+## Next development phase
+
+After this smoke test is stable, add source families separately:
+- Tunisia: TanitJobs, Fabskill, company career sites and additional local boards.
+- ATS: Greenhouse, Lever, Ashby, SmartRecruiters, Workable, Teamtailor, Workday.
+- Discovery: search-engine discovery and company-domain enumeration.
+- JavaScript pages: Playwright, only where needed and without CAPTCHA/access-control bypass.
+- UI: local/desktop dashboard first, remotely accessible dashboard after the data layer is stable.
