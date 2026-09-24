@@ -1,4 +1,4 @@
-"""Offline, atomic import of completed T/TEA Job Hunter artifacts.
+"""Offline, atomic import of completed or partial T/TEA Job Hunter artifacts.
 
 Usage: python -m src.ttea_integration import-run --run-dir PATH [--db PATH]
 Only known evidence fields are retained; manifests and source documents are
@@ -189,8 +189,8 @@ def import_run(run_dir: str | Path, engine) -> dict:
     external_id = manifest.get("run_id")
     if not isinstance(external_id, str) or not external_id.strip() or len(external_id) > 200:
         raise ImportRunError("run.json needs a nonempty run_id of at most 200 characters")
-    if manifest.get("status") != "completed":
-        raise ImportRunError("Only completed T/TEA runs can be imported")
+    if manifest.get("status") not in ("completed", "partial"):
+        raise ImportRunError("Only completed or partial T/TEA runs can be imported")
     entries = ranked.get("jobs")
     if not isinstance(entries, list):
         raise ImportRunError("ranked_jobs.json needs a jobs array")
@@ -200,7 +200,7 @@ def import_run(run_dir: str | Path, engine) -> dict:
     parsed = [_entry(entry, manifest) for entry in entries]
     now = datetime.now(timezone.utc)
     run_values = dict(
-        external_run_id=external_id, status="completed",
+        external_run_id=external_id, status=manifest["status"],
         source_name=_text(manifest.get("source"), 100),
         provider=_text(manifest.get("provider"), 100), model=_text(manifest.get("model"), 200),
         started_at=_date(manifest.get("started_at")), finished_at=_date(manifest.get("completed_at")),

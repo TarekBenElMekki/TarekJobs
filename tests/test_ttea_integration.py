@@ -365,11 +365,37 @@ def test_multiple_sources_and_same_canonical_entry_are_idempotent(db, artifacts)
     assert counts(db) == (1, 2, 1, 1)
 
 
-@pytest.mark.parametrize("status", ["running", "failed", None])
+@pytest.mark.parametrize("status", ["running", "failed", "interrupted", None])
 def test_incomplete_runs_rejected(db, artifacts, status):
     directory, manifest, entry = artifacts
     manifest["status"] = status
     write_artifacts(directory, manifest, [entry])
     with pytest.raises(ImportRunError, match="Only completed"):
+        import_run(directory, db)
+    assert counts(db) == (0, 0, 0, 0)
+
+
+@pytest.mark.parametrize("status", ["completed", "partial"])
+@pytest.mark.parametrize("retained", [True, False])
+def test_publishable_run_status_and_idempotency(db, artifacts, status, retained):
+    directory, manifest, entry = artifacts
+    manifest["status"] = status
+    write_artifacts(directory, manifest, [entry] if retained else [])
+    first = import_run(directory, db)
+    second = import_run(directory, db)
+    assert first["jobs_read"] == int(retained)
+    assert counts(db) == (int(retained), int(retained), 1, int(retained))
+    assert second["runs_reused"] == 1
+    assert second["assessments_reused"] == int(retained)
+    with Session(db) as session:
+        assert session.scalar(select(TteaRunORM)).status == status
+
+
+def test_invalid_partial_artifact_is_atomic(db, artifacts):
+    directory, manifest, entry = artifacts
+    manifest["status"] = "partial"
+    entry["score"] = None
+    write_artifacts(directory, manifest, [entry])
+    with pytest.raises(ImportRunError, match="finite score"):
         import_run(directory, db)
     assert counts(db) == (0, 0, 0, 0)
