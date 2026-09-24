@@ -13,6 +13,7 @@ from sqlalchemy import (
     Integer,
     String,
     Text,
+    UniqueConstraint,
     create_engine,
     inspect,
     select,
@@ -111,6 +112,10 @@ class JobORM(Base):
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
 
     sources: Mapped[list["JobSourceORM"]] = relationship(back_populates="job", cascade="all, delete-orphan")
+    ttea_assessments: Mapped[list["TteaAssessmentORM"]] = relationship(
+        back_populates="job", cascade="all, delete-orphan", lazy="selectin",
+        order_by="(TteaAssessmentORM.scored_at.desc(), TteaAssessmentORM.imported_at.desc(), TteaAssessmentORM.id.desc())",
+    )
 
 
 class JobSourceORM(Base):
@@ -126,6 +131,42 @@ class JobSourceORM(Base):
     last_seen_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
 
     job: Mapped[JobORM] = relationship(back_populates="sources")
+
+
+class TteaRunORM(Base):
+    __tablename__ = "ttea_runs"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    external_run_id: Mapped[str] = mapped_column(String(200), unique=True)
+    status: Mapped[str] = mapped_column(String(40))
+    source_name: Mapped[str] = mapped_column(String(100), default="")
+    provider: Mapped[str] = mapped_column(String(100), default="")
+    model: Mapped[str] = mapped_column(String(200), default="")
+    started_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    finished_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    imported_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
+    counts_json: Mapped[str] = mapped_column(Text, default="{}")
+    usage_json: Mapped[str] = mapped_column(Text, default="{}")
+
+
+class TteaAssessmentORM(Base):
+    __tablename__ = "ttea_assessments"
+    __table_args__ = (UniqueConstraint("job_id", "run_id", name="uq_ttea_job_run"),)
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    job_id: Mapped[int] = mapped_column(ForeignKey("jobs.id"), index=True)
+    run_id: Mapped[int] = mapped_column(ForeignKey("ttea_runs.id"), index=True)
+    score: Mapped[float] = mapped_column(Float)
+    strengths_json: Mapped[str] = mapped_column(Text, default="[]")
+    gaps_json: Mapped[str] = mapped_column(Text, default="[]")
+    explanation: Mapped[str] = mapped_column(Text, default="")
+    provider: Mapped[str] = mapped_column(String(100), default="")
+    model: Mapped[str] = mapped_column(String(200), default="")
+    scored_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    imported_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
+
+    job: Mapped[JobORM] = relationship(back_populates="ttea_assessments")
+    run: Mapped[TteaRunORM] = relationship(lazy="joined")
 
 
 def get_engine(db_path: str):
@@ -362,14 +403,46 @@ def _apply_record_metadata(job: JobORM, record: JobRecord) -> None:
         job.remote_region = record.remote_region
 
 
+def _apply_import_metadata(job: JobORM, record: JobRecord) -> None:
+    """Fill missing evidence without resetting richer metadata or human decisions."""
+    if not job.title:
+        job.title = record.title
+        job.norm_title = norm_text(record.title)
+    if not job.work_mode and record.work_mode:
+        job.remote = record.remote
+    for name in (
+        "location", "employment_type", "remote_region", "seniority", "min_years", "max_years",
+        "posted_at", "country", "city", "work_mode", "education_requirement",
+    ):
+        value = getattr(record, name)
+        if getattr(job, name) in (None, "") and value not in (None, ""):
+            setattr(job, name, value)
+    if not _valid_company(job.company) and _valid_company(record.company):
+        job.company = record.company
+    if len(record.description or "") > len(job.description or ""):
+        job.description = record.description
+    job.norm_company = norm_text(job.company)
+    job.norm_location = norm_text(job.location)
+
+
 def upsert_job(session: Session, record: JobRecord, scores: ScoreResult, stale: bool) -> tuple[JobORM, str]:
+    return _upsert_job(session, record, scores, stale)
+
+
+def upsert_job_metadata(session: Session, record: JobRecord) -> tuple[JobORM, str]:
+    """Reuse canonical/source dedup without assigning any legacy scores."""
+    return _upsert_job(session, record, None, False)
+
+
+def _upsert_job(session: Session, record: JobRecord, scores: ScoreResult | None, stale: bool) -> tuple[JobORM, str]:
     existing_source = session.scalar(select(JobSourceORM).where(JobSourceORM.source_url == record.source_url))
     now = datetime.now(timezone.utc)
 
     if existing_source:
         job = existing_source.job
-        _apply_record_metadata(job, record)
-        _apply_scores(job, scores)
+        (_apply_record_metadata if scores is not None else _apply_import_metadata)(job, record)
+        if scores is not None:
+            _apply_scores(job, scores)
         job.stale = stale
         job.last_seen_at = now
         job.last_verified_at = record.last_verified_at or now
@@ -428,12 +501,14 @@ def upsert_job(session: Session, record: JobRecord, scores: ScoreResult, stale: 
             created_at=now,
             updated_at=now,
         )
-        _apply_scores(job, scores)
+        if scores is not None:
+            _apply_scores(job, scores)
         session.add(job)
         session.flush()
     else:
-        _apply_record_metadata(job, record)
-        _apply_scores(job, scores)
+        (_apply_record_metadata if scores is not None else _apply_import_metadata)(job, record)
+        if scores is not None:
+            _apply_scores(job, scores)
         job.stale = job.stale and stale
         job.last_seen_at = now
         job.last_verified_at = record.last_verified_at or now

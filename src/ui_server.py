@@ -5,6 +5,7 @@ import re
 import subprocess
 import sys
 import threading
+from contextlib import asynccontextmanager
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
 from typing import Any, Literal
@@ -17,7 +18,7 @@ from pydantic import BaseModel, Field
 from sqlalchemy import case, func, or_, select
 from sqlalchemy.orm import Session, selectinload
 
-from .database import JobORM, JobSourceORM, get_engine, init_db
+from .database import JobORM, JobSourceORM, TteaAssessmentORM, TteaRunORM, get_engine, init_db
 from .matcher import score_job
 from .models import JobRecord
 
@@ -92,9 +93,15 @@ def _json_field(value: str | None, default):
 settings = _load_yaml(SETTINGS_PATH)
 db_path = ROOT / settings.get("storage", {}).get("sqlite_path", "data/jobs.db")
 engine = get_engine(str(db_path))
-init_db(engine)
 
-app = FastAPI(title="TarekJobs Dashboard API", version="0.5.0")
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    init_db(engine)
+    yield
+
+
+app = FastAPI(title="TarekJobs Dashboard API", version="0.5.0", lifespan=lifespan)
 app.mount("/assets", StaticFiles(directory=UI_DIR), name="assets")
 
 
@@ -131,6 +138,13 @@ def _iso(value) -> str | None:
         return str(value)
 
 
+def _ttea_iso(value) -> str | None:
+    # SQLite returns naive datetimes even for timezone=True; the importer stores UTC.
+    if isinstance(value, datetime) and value.tzinfo is None:
+        value = value.replace(tzinfo=timezone.utc)
+    return _iso(value)
+
+
 def _reason_groups(explanations: list[str]) -> dict[str, list[str]]:
     groups = {"blockers": [], "matches": [], "verification": [], "rules": []}
     for raw in explanations:
@@ -153,6 +167,7 @@ def _job_payload(job: JobORM, include_description: bool = False) -> dict:
     required_languages = _json_field(job.required_languages_json, [])
     confidence = _json_field(job.extraction_confidence_json, {})
     reason_groups = _reason_groups(explanations)
+    latest = job.ttea_assessments[0] if job.ttea_assessments else None
 
     payload = {
         "id": job.id,
@@ -182,6 +197,19 @@ def _job_payload(job: JobORM, include_description: bool = False) -> dict:
         "eligibility_status": job.eligibility_status or "needs_verification",
         "verdict": job.verdict or "needs_verification",
         "review_status": job.review_status or "unreviewed",
+        "score": {"value": latest.score if latest else job.overall_score,
+                  "origin": "ttea" if latest else "legacy"},
+        "ttea_assessment": {
+            "score": latest.score,
+            "strengths": _json_field(latest.strengths_json, []),
+            "gaps": _json_field(latest.gaps_json, []),
+            "explanation": latest.explanation,
+            "provider": latest.provider,
+            "model": latest.model,
+            "run_id": latest.run.external_run_id,
+            "scored_at": _ttea_iso(latest.scored_at),
+            "imported_at": _ttea_iso(latest.imported_at),
+        } if latest else None,
         "scores": {
             "technical": job.technical_score,
             "eligibility": job.eligibility_score,
@@ -237,6 +265,29 @@ def _job_payload(job: JobORM, include_description: bool = False) -> dict:
     if include_description:
         payload["description"] = job.description or ""
     return payload
+
+
+def _primary_score():
+    latest = (select(TteaAssessmentORM.score)
+              .where(TteaAssessmentORM.job_id == JobORM.id)
+              .order_by(TteaAssessmentORM.scored_at.desc(), TteaAssessmentORM.imported_at.desc(),
+                        TteaAssessmentORM.id.desc())
+              .limit(1).correlate(JobORM).scalar_subquery())
+    return func.coalesce(latest, JobORM.overall_score)
+
+
+@app.get("/api/ttea/runs")
+def ttea_runs(limit: int = Query(default=25, ge=1, le=100)):
+    with Session(engine) as session:
+        runs = session.scalars(select(TteaRunORM).order_by(
+            TteaRunORM.imported_at.desc(), TteaRunORM.id.desc()).limit(limit)).all()
+        return {"items": [{
+            "id": run.id, "run_id": run.external_run_id, "status": run.status,
+            "source": run.source_name, "provider": run.provider, "model": run.model,
+            "started_at": _ttea_iso(run.started_at), "finished_at": _ttea_iso(run.finished_at),
+            "imported_at": _ttea_iso(run.imported_at),
+            "counts": _json_field(run.counts_json, {}), "usage": _json_field(run.usage_json, {}),
+        } for run in runs]}
 
 
 def _status_counts(session: Session) -> dict[str, int]:
@@ -458,8 +509,8 @@ def overview():
         phd_total = session.scalar(select(func.count(JobORM.id)).where(JobORM.opportunity_type == "phd")) or 0
         live = session.scalar(select(func.count(JobORM.id)).where(JobORM.stale.is_(False))) or 0
         stale = session.scalar(select(func.count(JobORM.id)).where(JobORM.stale.is_(True))) or 0
-        strong = session.scalar(select(func.count(JobORM.id)).where(JobORM.stale.is_(False), JobORM.overall_score >= 65)) or 0
-        eligible_50 = session.scalar(select(func.count(JobORM.id)).where(JobORM.stale.is_(False), JobORM.overall_score >= 50, JobORM.eligibility_score >= 50)) or 0
+        strong = session.scalar(select(func.count(JobORM.id)).where(JobORM.stale.is_(False), _primary_score() >= 65)) or 0
+        eligible_50 = session.scalar(select(func.count(JobORM.id)).where(JobORM.stale.is_(False), _primary_score() >= 50, JobORM.eligibility_score >= 50)) or 0
         status_counts = _status_counts(session)
         review_counts = _review_counts(session)
 
@@ -495,11 +546,12 @@ def list_jobs(
     remote: Literal["all", "yes", "no"] = "all",
     location_bucket: Literal["all", "local", "remote_accessible", "remote_restricted"] = "all",
     freshness: Literal["live", "stale", "all"] = "live",
-    sort: Literal["score", "newest", "first_seen", "updated"] = "score",
+    sort: Literal["score", "verdict", "newest", "first_seen", "updated"] = "score",
     page: int = Query(default=1, ge=1),
     page_size: int = Query(default=25, ge=1, le=100),
 ):
-    filters = [JobORM.overall_score >= min_score]
+    primary_score = _primary_score()
+    filters = [primary_score >= min_score]
     if opportunity_type != "all":
         filters.append(JobORM.opportunity_type == opportunity_type)
     if q.strip():
@@ -536,7 +588,7 @@ def list_jobs(
         filters.append(JobORM.stale.is_(True))
 
     if sort == "newest":
-        order = [JobORM.posted_at.desc(), JobORM.overall_score.desc()]
+        order = [JobORM.posted_at.desc(), primary_score.desc()]
     elif sort == "first_seen":
         order = [JobORM.first_seen_at.desc()]
     elif sort == "updated":
@@ -548,7 +600,7 @@ def list_jobs(
             (JobORM.verdict == "needs_verification", 1),
             else_=2,
         )
-        order = [verdict_order.asc(), JobORM.overall_score.desc(), JobORM.posted_at.desc()]
+        order = [verdict_order.asc(), primary_score.desc(), JobORM.posted_at.desc()]
 
     with Session(engine) as session:
         total = session.scalar(select(func.count(JobORM.id)).where(*filters)) or 0

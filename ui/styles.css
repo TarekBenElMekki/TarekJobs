@@ -1506,3 +1506,13 @@ button.register-row:hover {
 .brand-logo {
   width: min(168px, 88%);
 }
+
+/* T/TEA integration: retain the dashboard ledger and score language. */
+.score-origin{display:block;font-size:10px;line-height:1.4;letter-spacing:.06em;margin-top:3px}
+.ttea-assessment{border-top:1px solid currentColor;border-bottom:1px solid currentColor;padding:12px 0;margin:18px 0}
+.ttea-assessment p,.ttea-assessment li{line-height:1.6;white-space:pre-wrap;overflow-wrap:anywhere}
+.ttea-assessment .job-subline{overflow-wrap:anywhere}
+.ttea-run-history{overflow-x:auto}
+.ttea-runs{width:100%;border-collapse:collapse;font-size:12px;text-align:left}
+.ttea-runs th,.ttea-runs td{padding:10px 8px;border-bottom:1px solid currentColor;vertical-align:top}
+.ttea-runs th{font-size:10px;letter-spacing:.04em}
