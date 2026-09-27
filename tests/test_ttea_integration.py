@@ -20,7 +20,7 @@ from sqlalchemy.orm import Session
 from src import database
 from src.database import (
     Base, JobORM, JobSourceORM, TteaAssessmentORM, TteaRunORM,
-    get_engine, init_db, upsert_job,
+    get_engine, init_db, upsert_job, upsert_job_metadata_strong,
 )
 from src.models import JobRecord, ScoreResult
 from src.ttea_integration import ImportRunError, import_run, main
@@ -399,3 +399,206 @@ def test_invalid_partial_artifact_is_atomic(db, artifacts):
     with pytest.raises(ImportRunError, match="finite score"):
         import_run(directory, db)
     assert counts(db) == (0, 0, 0, 0)
+
+
+
+def test_strong_upsert_does_not_fuzzy_merge_distinct_source_identity(db):
+    legacy_id = legacy_job(
+        db,
+        title="Junior Software Engineer",
+        company="Example Company",
+        location="Tunis",
+    )
+
+    record = JobRecord(
+        title="Junior Software Engineer",
+        company="Example Company",
+        location="Tunis",
+        source_name="LinkedIn",
+        source_url=(
+            "https://www.linkedin.com/"
+            "jobs/view/1111111111/"
+        ),
+        external_id="1111111111",
+    )
+
+    with Session(db) as session, session.begin():
+        job, action = upsert_job_metadata_strong(
+            session,
+            record,
+        )
+
+        hunting_id = job.id
+
+    assert action == "inserted"
+    assert hunting_id != legacy_id
+    assert counts(db) == (2, 2, 0, 0)
+
+
+def test_strong_upsert_reuses_provider_external_id(db):
+    first = JobRecord(
+        title="QA Engineer",
+        company="Example One",
+        location="Tunis",
+        source_name="LinkedIn",
+        source_url=(
+            "https://www.linkedin.com/"
+            "jobs/view/2222222222/"
+        ),
+        external_id="2222222222",
+        raw_payload={
+            "capture": 1,
+        },
+    )
+
+    with Session(db) as session, session.begin():
+        job, action = upsert_job_metadata_strong(
+            session,
+            first,
+        )
+
+        first_id = job.id
+
+    assert action == "inserted"
+
+    second = JobRecord(
+        title="QA Engineer",
+        company="Example One",
+        location="Tunis",
+        source_name="LinkedIn",
+        source_url=(
+            "https://www.linkedin.com/"
+            "jobs/view/2222222222/"
+            "?trackingId=new-sighting"
+        ),
+        external_id="2222222222",
+        raw_payload={
+            "capture": 2,
+        },
+    )
+
+    with Session(db) as session, session.begin():
+        job, action = upsert_job_metadata_strong(
+            session,
+            second,
+        )
+
+        second_id = job.id
+
+    assert action == "seen_again"
+    assert second_id == first_id
+    assert counts(db) == (1, 1, 0, 0)
+
+    with Session(db) as session:
+        source = session.scalar(
+            select(JobSourceORM)
+        )
+
+        assert source.external_id == "2222222222"
+
+        assert (
+            json.loads(
+                source.raw_payload_json
+            )
+            == {
+                "capture": 2,
+            }
+        )
+
+
+def test_strong_external_id_is_scoped_to_source_provider(db):
+    linkedin = JobRecord(
+        title="Software Engineer",
+        company="Example",
+        location="Tunis",
+        source_name="LinkedIn",
+        source_url=(
+            "https://www.linkedin.com/"
+            "jobs/view/3333333333/"
+        ),
+        external_id="3333333333",
+    )
+
+    with Session(db) as session, session.begin():
+        first, _ = upsert_job_metadata_strong(
+            session,
+            linkedin,
+        )
+
+        first_id = first.id
+
+    other = JobRecord(
+        title="Software Engineer",
+        company="Example",
+        location="Tunis",
+        source_name="AnotherProvider",
+        source_url=(
+            "https://jobs.example.test/"
+            "3333333333"
+        ),
+        external_id="3333333333",
+    )
+
+    with Session(db) as session, session.begin():
+        second, action = upsert_job_metadata_strong(
+            session,
+            other,
+        )
+
+        second_id = second.id
+
+    assert action == "inserted"
+    assert second_id != first_id
+    assert counts(db) == (2, 2, 0, 0)
+
+
+def test_strong_upsert_can_attach_source_by_exact_canonical_url(db):
+    existing_id = legacy_job(
+        db,
+        title="Integration Engineer",
+        company="Example",
+        location="Tunis",
+        source_name="legacy",
+        source_url=(
+            "https://example.test/"
+            "jobs/canonical-44"
+        ),
+    )
+
+    with Session(db) as session, session.begin():
+        source = session.scalar(
+            select(JobSourceORM).where(
+                JobSourceORM.job_id
+                == existing_id
+            )
+        )
+
+        session.delete(
+            source
+        )
+
+    assert counts(db) == (1, 0, 0, 0)
+
+    record = JobRecord(
+        title="Integration Engineer",
+        company="Example",
+        location="Tunis",
+        source_name="ExampleProvider",
+        source_url=(
+            "https://example.test/"
+            "jobs/canonical-44"
+        ),
+        external_id="canonical-44",
+    )
+
+    with Session(db) as session, session.begin():
+        job, action = upsert_job_metadata_strong(
+            session,
+            record,
+        )
+
+        matched_id = job.id
+
+    assert action == "matched_canonical_url"
+    assert matched_id == existing_id
+    assert counts(db) == (1, 1, 0, 0)

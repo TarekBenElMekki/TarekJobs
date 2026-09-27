@@ -434,8 +434,59 @@ def upsert_job_metadata(session: Session, record: JobRecord) -> tuple[JobORM, st
     return _upsert_job(session, record, None, False)
 
 
-def _upsert_job(session: Session, record: JobRecord, scores: ScoreResult | None, stale: bool) -> tuple[JobORM, str]:
-    existing_source = session.scalar(select(JobSourceORM).where(JobSourceORM.source_url == record.source_url))
+def upsert_job_metadata_strong(
+    session: Session,
+    record: JobRecord,
+) -> tuple[JobORM, str]:
+    """Upsert using strong source identity only.
+
+    Intended for browser-grounded Hunting opportunities.
+
+    Identity order:
+      1. exact source URL;
+      2. same source/provider + external posting ID;
+      3. exact canonical URL already held by a job;
+      4. otherwise insert a distinct job.
+
+    The legacy title/company/location fuzzy matcher is deliberately
+    excluded from this path.
+    """
+    return _upsert_job(
+        session,
+        record,
+        None,
+        False,
+        strong_identity_only=True,
+    )
+
+
+def _upsert_job(
+    session: Session,
+    record: JobRecord,
+    scores: ScoreResult | None,
+    stale: bool,
+    *,
+    strong_identity_only: bool = False,
+) -> tuple[JobORM, str]:
+    existing_source = session.scalar(
+        select(JobSourceORM).where(
+            JobSourceORM.source_url == record.source_url
+        )
+    )
+
+    if (
+        existing_source is None
+        and strong_identity_only
+        and record.source_name
+        and record.external_id
+    ):
+        existing_source = session.scalar(
+            select(JobSourceORM).where(
+                JobSourceORM.source_name == record.source_name,
+                JobSourceORM.external_id == record.external_id,
+            )
+        )
+
     now = datetime.now(timezone.utc)
 
     if existing_source:
@@ -448,11 +499,45 @@ def _upsert_job(session: Session, record: JobRecord, scores: ScoreResult | None,
         job.last_verified_at = record.last_verified_at or now
         job.updated_at = now
         existing_source.last_seen_at = now
-        existing_source.raw_payload_json = json.dumps(record.raw_payload, ensure_ascii=False, default=str)
+
+        if (
+            strong_identity_only
+            and record.external_id
+            and not existing_source.external_id
+        ):
+            existing_source.external_id = record.external_id
+
+        existing_source.raw_payload_json = json.dumps(
+            record.raw_payload,
+            ensure_ascii=False,
+            default=str,
+        )
+
         return job, "seen_again"
 
-    job = _find_duplicate(session, record)
-    action = "merged" if job else "inserted"
+    if strong_identity_only:
+        job = session.scalar(
+            select(JobORM).where(
+                JobORM.canonical_url == record.source_url
+            )
+        )
+
+        action = (
+            "matched_canonical_url"
+            if job
+            else "inserted"
+        )
+    else:
+        job = _find_duplicate(
+            session,
+            record,
+        )
+
+        action = (
+            "merged"
+            if job
+            else "inserted"
+        )
 
     if not job:
         job = JobORM(
