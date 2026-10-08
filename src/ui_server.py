@@ -15,7 +15,7 @@ from fastapi import FastAPI, HTTPException, Query
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
-from sqlalchemy import case, func, or_, select
+from sqlalchemy import case, func, or_, select, literal_column
 from sqlalchemy.orm import Session, selectinload
 
 from .database import JobORM, JobSourceORM, TteaAssessmentORM, TteaRunORM, get_engine, init_db
@@ -267,13 +267,40 @@ def _job_payload(job: JobORM, include_description: bool = False) -> dict:
     return payload
 
 
+# TTEA_NEW_AI_ACTIVE_POOL_V1
+def _new_ai_keep_clause():
+    """Authoritative admission gate for the active opportunity pool."""
+    return literal_column(
+        "EXISTS ("
+        "SELECT 1 "
+        "FROM ttea_job_decisions AS ttea_active_gate "
+        "WHERE ttea_active_gate.canonical_job_id = jobs.id "
+        "AND ttea_active_gate.gate_decision = 'KEEP'"
+        ")"
+    )
+
+
+def _new_ai_score():
+    """Authoritative score for jobs admitted by the new AI gate."""
+    return literal_column(
+        "("
+        "SELECT ttea_active_score.score "
+        "FROM ttea_job_decisions AS ttea_active_score "
+        "WHERE ttea_active_score.canonical_job_id = jobs.id "
+        "AND ttea_active_score.gate_decision = 'KEEP' "
+        "LIMIT 1"
+        ")"
+    )
+
+
 def _primary_score():
+    new_ai_score = _new_ai_score()
     latest = (select(TteaAssessmentORM.score)
               .where(TteaAssessmentORM.job_id == JobORM.id)
               .order_by(TteaAssessmentORM.scored_at.desc(), TteaAssessmentORM.imported_at.desc(),
                         TteaAssessmentORM.id.desc())
               .limit(1).correlate(JobORM).scalar_subquery())
-    return func.coalesce(latest, JobORM.overall_score)
+    return func.coalesce(new_ai_score, latest, JobORM.overall_score)
 
 
 @app.get("/api/ttea/runs")
@@ -297,6 +324,36 @@ def _status_counts(session: Session) -> dict[str, int]:
     return {status or "not_started": int(count) for status, count in rows}
 
 
+def _active_status_counts(session: Session) -> dict[str, int]:
+    rows = session.execute(
+        select(
+            JobORM.application_status,
+            func.count(JobORM.id),
+        )
+        .where(_new_ai_keep_clause())
+        .group_by(JobORM.application_status)
+    ).all()
+    return {
+        status or "not_started": int(count)
+        for status, count in rows
+    }
+
+
+def _active_review_counts(session: Session) -> dict[str, int]:
+    rows = session.execute(
+        select(
+            JobORM.review_status,
+            func.count(JobORM.id),
+        )
+        .where(_new_ai_keep_clause())
+        .group_by(JobORM.review_status)
+    ).all()
+    return {
+        status or "unreviewed": int(count)
+        for status, count in rows
+    }
+
+
 def _review_counts(session: Session) -> dict[str, int]:
     rows = session.execute(select(JobORM.review_status, func.count(JobORM.id)).group_by(JobORM.review_status)).all()
     return {status or "unreviewed": int(count) for status, count in rows}
@@ -313,9 +370,15 @@ def _source_poll_info() -> list[dict]:
             select(JobSourceORM.source_name, func.count(JobSourceORM.id)).group_by(JobSourceORM.source_name)
         ).all())
         live_counts = dict(session.execute(
-            select(JobSourceORM.source_name, func.count(JobSourceORM.id))
+            select(
+                JobSourceORM.source_name,
+                func.count(func.distinct(JobORM.id)),
+            )
             .join(JobORM, JobORM.id == JobSourceORM.job_id)
-            .where(JobORM.stale.is_(False))
+            .where(
+                JobORM.stale.is_(False),
+                _new_ai_keep_clause(),
+            )
             .group_by(JobSourceORM.source_name)
         ).all())
 
@@ -504,15 +567,58 @@ def overview():
     new_last_run = int((last_run or {}).get("summary", {}).get("new_jobs", 0) or 0)
 
     with Session(engine) as session:
-        total = session.scalar(select(func.count(JobORM.id))) or 0
-        job_total = session.scalar(select(func.count(JobORM.id)).where(JobORM.opportunity_type == "job")) or 0
-        phd_total = session.scalar(select(func.count(JobORM.id)).where(JobORM.opportunity_type == "phd")) or 0
-        live = session.scalar(select(func.count(JobORM.id)).where(JobORM.stale.is_(False))) or 0
-        stale = session.scalar(select(func.count(JobORM.id)).where(JobORM.stale.is_(True))) or 0
-        strong = session.scalar(select(func.count(JobORM.id)).where(JobORM.stale.is_(False), _primary_score() >= 65)) or 0
-        eligible_50 = session.scalar(select(func.count(JobORM.id)).where(JobORM.stale.is_(False), _primary_score() >= 50, JobORM.eligibility_score >= 50)) or 0
-        status_counts = _status_counts(session)
-        review_counts = _review_counts(session)
+        active_keep = _new_ai_keep_clause()
+        total = session.scalar(
+            select(func.count(JobORM.id))
+            .where(active_keep)
+        ) or 0
+        job_total = session.scalar(
+            select(func.count(JobORM.id))
+            .where(
+                active_keep,
+                JobORM.opportunity_type == "job",
+            )
+        ) or 0
+        phd_total = session.scalar(
+            select(func.count(JobORM.id))
+            .where(
+                active_keep,
+                JobORM.opportunity_type == "phd",
+            )
+        ) or 0
+        live = session.scalar(
+            select(func.count(JobORM.id))
+            .where(
+                active_keep,
+                JobORM.stale.is_(False),
+            )
+        ) or 0
+        stale = session.scalar(
+            select(func.count(JobORM.id))
+            .where(
+                active_keep,
+                JobORM.stale.is_(True),
+            )
+        ) or 0
+        strong = session.scalar(
+            select(func.count(JobORM.id))
+            .where(
+                active_keep,
+                JobORM.stale.is_(False),
+                _primary_score() >= 65,
+            )
+        ) or 0
+        eligible_50 = session.scalar(
+            select(func.count(JobORM.id))
+            .where(
+                active_keep,
+                JobORM.stale.is_(False),
+                _primary_score() >= 50,
+                JobORM.eligibility_score >= 50,
+            )
+        ) or 0
+        status_counts = _active_status_counts(session)
+        review_counts = _active_review_counts(session)
 
     return {
         "metrics": {
@@ -551,7 +657,10 @@ def list_jobs(
     page_size: int = Query(default=25, ge=1, le=100),
 ):
     primary_score = _primary_score()
-    filters = [primary_score >= min_score]
+    filters = [
+        _new_ai_keep_clause(),
+        primary_score >= min_score,
+    ]
     if opportunity_type != "all":
         filters.append(JobORM.opportunity_type == opportunity_type)
     if q.strip():
@@ -624,7 +733,14 @@ def list_jobs(
 @app.get("/api/jobs/{job_id}")
 def get_job(job_id: int):
     with Session(engine) as session:
-        job = session.scalar(select(JobORM).options(selectinload(JobORM.sources)).where(JobORM.id == job_id))
+        job = session.scalar(
+            select(JobORM)
+            .options(selectinload(JobORM.sources))
+            .where(
+                JobORM.id == job_id,
+                _new_ai_keep_clause(),
+            )
+        )
         if not job:
             raise HTTPException(status_code=404, detail="Job not found")
         return _job_payload(job, include_description=True)
@@ -633,7 +749,14 @@ def get_job(job_id: int):
 @app.patch("/api/jobs/{job_id}")
 def update_job(job_id: int, payload: JobUpdate):
     with Session(engine) as session:
-        job = session.scalar(select(JobORM).options(selectinload(JobORM.sources)).where(JobORM.id == job_id))
+        job = session.scalar(
+            select(JobORM)
+            .options(selectinload(JobORM.sources))
+            .where(
+                JobORM.id == job_id,
+                _new_ai_keep_clause(),
+            )
+        )
         if not job:
             raise HTTPException(status_code=404, detail="Job not found")
 

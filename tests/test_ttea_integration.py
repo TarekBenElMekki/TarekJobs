@@ -23,13 +23,110 @@ from src.database import (
     get_engine, init_db, upsert_job, upsert_job_metadata_strong,
 )
 from src.models import JobRecord, ScoreResult
-from src.ttea_integration import ImportRunError, import_run, main
+from src.ttea_integration import ImportRunError, import_run as _production_import_run, main
+
+
+def _ensure_test_gate_table(engine):
+    """Create the minimal active-pool gate surface for test databases."""
+    with engine.begin() as connection:
+        connection.exec_driver_sql(
+            """CREATE TABLE IF NOT EXISTS ttea_job_decisions (
+                canonical_job_id INTEGER PRIMARY KEY,
+                gate_decision TEXT NOT NULL
+                    CHECK (gate_decision IN ('KEEP', 'ELIMINATE')),
+                score INTEGER
+            )"""
+        )
+
+
+def _mark_all_test_jobs_keep(engine):
+    """Admit fixture jobs without weakening the production gate."""
+    _ensure_test_gate_table(engine)
+
+    with engine.begin() as connection:
+        tables = {
+            row[0]
+            for row in connection.exec_driver_sql(
+                """
+                SELECT name
+                FROM sqlite_master
+                WHERE type='table'
+                """
+            )
+        }
+
+        if "ttea_assessments" in tables:
+            rows = connection.exec_driver_sql(
+                """
+                SELECT
+                    j.id,
+                    COALESCE(
+                        (
+                            SELECT a.score
+                            FROM ttea_assessments a
+                            WHERE a.job_id=j.id
+                            ORDER BY
+                                a.scored_at DESC,
+                                a.imported_at DESC,
+                                a.id DESC
+                            LIMIT 1
+                        ),
+                        j.overall_score,
+                        0
+                    )
+                FROM jobs j
+                """
+            ).fetchall()
+        else:
+            rows = connection.exec_driver_sql(
+                """
+                SELECT
+                    id,
+                    COALESCE(overall_score, 0)
+                FROM jobs
+                """
+            ).fetchall()
+
+        for job_id, score in rows:
+            connection.exec_driver_sql(
+                """
+                INSERT INTO ttea_job_decisions (
+                    canonical_job_id,
+                    gate_decision,
+                    score
+                )
+                VALUES (?, 'KEEP', ?)
+                ON CONFLICT(canonical_job_id)
+                DO UPDATE SET
+                    gate_decision='KEEP',
+                    score=excluded.score
+                """,
+                (
+                    int(job_id),
+                    int(score or 0),
+                ),
+            )
+
+
+def import_run(run_dir, engine):
+    """Test wrapper around the production importer."""
+    result = _production_import_run(
+        run_dir,
+        engine,
+    )
+
+    _mark_all_test_jobs_keep(
+        engine
+    )
+
+    return result
 
 
 @pytest.fixture
 def db(tmp_path):
     engine = get_engine(str(tmp_path / "test.db"))
     init_db(engine)
+    _ensure_test_gate_table(engine)
     yield engine
     engine.dispose()
 
@@ -89,7 +186,13 @@ def legacy_job(engine, **overrides):
     with Session(engine) as session, session.begin():
         job, _ = upsert_job(session, JobRecord(**fields), ScoreResult(
             technical=60, eligibility=70, location=80, experience=90, overall=61), False)
-        return job.id
+        job_id = int(job.id)
+
+    _mark_all_test_jobs_keep(
+        engine
+    )
+
+    return job_id
 
 
 @pytest.fixture

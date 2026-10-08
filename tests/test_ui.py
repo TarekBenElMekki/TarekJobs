@@ -32,10 +32,22 @@ def client(tmp_path, monkeypatch):
         assert module.engine is engine
         assert set(inspect(engine).get_table_names()) == legacy_tables
 
+        # Active UI queries require the mandatory new-AI gate.
+        # Production retains the full provenance/FK contract.
+        with engine.begin() as connection:
+            connection.exec_driver_sql(
+                """CREATE TABLE ttea_job_decisions (
+                    canonical_job_id INTEGER PRIMARY KEY,
+                    gate_decision TEXT NOT NULL
+                        CHECK (gate_decision IN ('KEEP', 'ELIMINATE')),
+                    score INTEGER
+                )"""
+            )
+
         # The context manager runs normal FastAPI startup/lifespan initialization.
         with TestClient(module.app) as test_client:
             assert set(inspect(engine).get_table_names()) == legacy_tables | {
-                "ttea_runs", "ttea_assessments",
+                "ttea_runs", "ttea_assessments", "ttea_job_decisions",
             }
             yield test_client
     finally:
