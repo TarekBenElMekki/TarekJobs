@@ -7,10 +7,10 @@ PROJECT = Path(__file__).resolve().parents[1]
 BRAND = PROJECT / "assets" / "branding"
 UI = PROJECT / "ui"
 
-source = BRAND / "tarekjobs-logo-master.png"
-app_logo = BRAND / "tarekjobs-logo.png"
-icon = BRAND / "tarekjobs.ico"
-ui_logo = UI / "tarekjobs-logo.png"
+source = BRAND / "ttea-logo-master.png"
+app_logo = BRAND / "ttea-logo.png"
+icon = BRAND / "ttea.ico"
+ui_logo = UI / "ttea-logo.png"
 ui_icon = UI / "favicon.ico"
 touch = UI / "apple-touch-icon.png"
 

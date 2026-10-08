@@ -1,5 +1,5 @@
 [project]
-name = "tarekjobs"
+name = "ttea"
 version = "0.5.0"
 description = "Worldwide jobs and funded-PhD acquisition, matching and tracking system"
 requires-python = ">=3.11"

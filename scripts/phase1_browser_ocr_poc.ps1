@@ -1,4 +1,4 @@
-﻿param(
+param(
     [Parameter(Mandatory=$true)]
     [string]$Url
 )
@@ -9,11 +9,11 @@ $ROOT = Split-Path -Parent $PSScriptRoot
 $PY = Join-Path $ROOT ".venv\Scripts\python.exe"
 
 if (!(Test-Path $PY)) {
-    throw "TarekJobs virtual environment not found."
+    throw "TTEA virtual environment not found."
 }
 
 Write-Host ""
-Write-Host "TarekJobs Phase 1 POC" -ForegroundColor Cyan
+Write-Host "TTEA Phase 1 POC" -ForegroundColor Cyan
 Write-Host "URL: $Url" -ForegroundColor Gray
 Write-Host ""
 

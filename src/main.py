@@ -199,7 +199,7 @@ def dry_run(
     errors: dict[str, str] = {}
     per_source_default = max(1, max_jobs // max(1, len(enabled)))
 
-    console.print(f"\n[bold]TarekJobs dry run[/bold] - max {max_jobs} raw listings")
+    console.print(f"\n[bold]TTEA dry run[/bold] - max {max_jobs} raw listings")
     logging.info("Starting dry run with %s selected/enabled sources", len(enabled))
 
     for source_name, cfg in enabled:
@@ -275,7 +275,7 @@ def dry_run(
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="TarekJobs personal job-market collector")
+    parser = argparse.ArgumentParser(description="TTEA personal job-market collector")
     sub = parser.add_subparsers(dest="command")
     dry = sub.add_parser("dry-run", help="Fetch a live batch and run the full pipeline")
     dry.add_argument("--limit", type=int, default=None)

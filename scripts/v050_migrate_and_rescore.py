@@ -136,7 +136,7 @@ export_path = ROOT / settings.get("storage", {}).get("export_top_matches_csv", "
 exported = export_top_matches(engine, export_path)
 
 print("========================================================")
-print(" TarekJobs V0.5.0 - Global Core migration complete")
+print(" TTEA V0.5.0 - Global Core migration complete")
 print("========================================================")
 print(f"Database:            {db_path}")
 print(f"Canonical rows:      {changed}")

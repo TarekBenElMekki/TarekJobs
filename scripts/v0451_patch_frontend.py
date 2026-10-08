@@ -124,19 +124,19 @@ version = "0451"
 html = re.sub(r'(/assets/styles\.css)(?:\?[^"\']*)?', rf'\1?v={version}', html)
 html = re.sub(r'(/assets/app\.js)(?:\?[^"\']*)?', rf'\1?v={version}', html)
 html = re.sub(
-    r'/assets/tarekjobs-logo(?:-hd)?\.png(?:\?[^"\']*)?',
-    f'/assets/tarekjobs-logo-hd.png?v={version}',
+    r'/assets/ttea-logo(?:-hd)?\.png(?:\?[^"\']*)?',
+    f'/assets/ttea-logo-hd.png?v={version}',
     html
 )
 html = re.sub(
-    r'/assets/(?:favicon|tarekjobs-v\d+)\.ico(?:\?[^"\']*)?',
-    f'/assets/tarekjobs-v0451.ico?v={version}',
+    r'/assets/(?:favicon|ttea-v\d+)\.ico(?:\?[^"\']*)?',
+    f'/assets/ttea-v0451.ico?v={version}',
     html
 )
-if "tarekjobs-icon-64.png" not in html:
+if "ttea-icon-64.png" not in html:
     html = html.replace(
         "</head>",
-        '  <link rel="icon" type="image/png" sizes="64x64" href="/assets/tarekjobs-icon-64.png?v=0451" />\n</head>',
+        '  <link rel="icon" type="image/png" sizes="64x64" href="/assets/ttea-icon-64.png?v=0451" />\n</head>',
         1
     )
 

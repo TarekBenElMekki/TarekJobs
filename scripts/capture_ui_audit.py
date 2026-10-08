@@ -15,7 +15,7 @@ if not desktop.exists():
     desktop = Path.home() / "Desktop"
 
 stamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-OUTPUT = desktop / f"TarekJobs_UI_Audit_{stamp}"
+OUTPUT = desktop / f"TTEA_UI_Audit_{stamp}"
 OUTPUT.mkdir(parents=True, exist_ok=True)
 
 VIEWPORT = {"width": 1600, "height": 1000}

@@ -51,7 +51,7 @@ class KeejobCollector(BaseCollector):
                 # Fail closed for the HTML collector if robots could not be read.
                 return False
             self._robots_cache[root] = parser
-        user_agent = self.settings.get("collection", {}).get("user_agent", "TarekJobs")
+        user_agent = self.settings.get("collection", {}).get("user_agent", "TTEA")
         return parser.can_fetch(user_agent, url)
 
     @staticmethod

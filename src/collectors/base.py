@@ -17,7 +17,7 @@ class BaseCollector(ABC):
         timeout = settings.get("collection", {}).get("request_timeout_seconds", 25)
         ua = settings.get("collection", {}).get(
             "user_agent",
-            "TarekJobs/0.1 (personal job-search research)"
+            "TTEA/0.1 (personal job-search research)"
         )
         self.client = httpx.Client(
             timeout=timeout,

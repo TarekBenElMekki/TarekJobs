@@ -1,4 +1,4 @@
-# TarekJobs
+# TTEA
 
 Personal job-market aggregation and matching prototype.
 

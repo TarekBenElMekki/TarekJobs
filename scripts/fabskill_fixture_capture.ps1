@@ -1,4 +1,4 @@
-﻿param(
+param(
     [Parameter(Mandatory=$true)]
     [ValidateSet("search","job")]
     [string]$Type,
@@ -12,7 +12,7 @@ $ROOT = Split-Path -Parent $PSScriptRoot
 $PY = Join-Path $ROOT ".venv\Scripts\python.exe"
 
 if (!(Test-Path $PY)) {
-    throw "TarekJobs Python environment not found: $PY"
+    throw "TTEA Python environment not found: $PY"
 }
 
 if ($Type -eq "job" -and [string]::IsNullOrWhiteSpace($JobId)) {

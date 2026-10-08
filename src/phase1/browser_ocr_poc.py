@@ -1,4 +1,4 @@
-﻿from __future__ import annotations
+from __future__ import annotations
 
 import argparse
 import csv
@@ -386,7 +386,7 @@ def extract_from_text(text: str, url: str) -> dict:
 
 def normalize_record(data: dict) -> JobRecord:
     """
-    Convert OCR extraction into the EXISTING TarekJobs JobRecord.
+    Convert OCR extraction into the EXISTING TTEA JobRecord.
     """
 
     return JobRecord(
@@ -521,7 +521,7 @@ def run(url: str):
 
     print("")
     print("=" * 70)
-    print("TAREKJOBS PHASE 1 — BROWSER/OCR PROOF OF CONCEPT")
+    print("TTEA PHASE 1 — BROWSER/OCR PROOF OF CONCEPT")
     print("=" * 70)
     print("")
     print(f"URL: {url}")
@@ -620,7 +620,7 @@ def run(url: str):
     # E — Existing JobRecord normalization
     # --------------------------------------------------------
 
-    print("[E/7] TarekJobs normalization...")
+    print("[E/7] TTEA normalization...")
 
     record = normalize_record(
         extracted

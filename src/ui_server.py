@@ -128,7 +128,7 @@ async def lifespan(app: FastAPI):
     yield
 
 
-app = FastAPI(title="TarekJobs Dashboard API", version="0.5.0", lifespan=lifespan)
+app = FastAPI(title="TTEA Dashboard API", version="0.5.0", lifespan=lifespan)
 app.mount("/assets", StaticFiles(directory=UI_DIR), name="assets")
 
 
@@ -773,14 +773,14 @@ def index():
 
 @app.get("/favicon.ico", include_in_schema=False)
 def favicon():
-    return FileResponse(UI_DIR / "favicon.ico")
+    return FileResponse(UI_DIR / "ttea-icon.svg")
 
 
 @app.get("/api/health")
 def health():
     return {
         "ok": True,
-        "project": settings.get("project", {}).get("name", "TarekJobs"),
+        "project": settings.get("project", {}).get("name", "TTEA"),
         "version": settings.get("project", {}).get("version", "0.4.0"),
         "database": str(db_path),
     }
@@ -1676,7 +1676,7 @@ def start_run(payload: RunRequest):
         target=_run_collection_worker,
         args=(run_id, payload.limit, payload.ignore_poll_interval, selected_names),
         daemon=True,
-        name=f"tarekjobs-{run_id}",
+        name=f"ttea-{run_id}",
     )
     RUN_THREAD.start()
     return state

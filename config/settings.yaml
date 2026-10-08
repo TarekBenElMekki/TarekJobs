@@ -1,11 +1,11 @@
 project:
-  name: TarekJobs
+  name: TTEA
   version: 0.5.0
   edition: Global Opportunity Core
 collection:
   max_jobs_per_dry_run: 250
   request_timeout_seconds: 25
-  user_agent: TarekJobs/0.1 (personal job-search research; respectful polling)
+  user_agent: TTEA/0.1 (personal job-search research; respectful polling)
   stale_after_days: 45
   preserve_stale_jobs: true
   recheck_removed_jobs: false

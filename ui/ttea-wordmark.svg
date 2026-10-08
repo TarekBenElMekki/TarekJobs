@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 180" role="img" aria-labelledby="title">
+  <title id="title">T/TEA</title>
+  <rect x="3" y="3" width="474" height="174" rx="8" fill="#f4edd9" stroke="#191915" stroke-width="6"/>
+  <path d="M24 30h432M24 150h432" stroke="#8d171b" stroke-width="5"/>
+  <text x="240" y="121" text-anchor="middle" font-family="Georgia,serif" font-size="100" font-weight="bold" fill="#191915">T/TEA</text>
+</svg>
