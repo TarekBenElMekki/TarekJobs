@@ -27,7 +27,7 @@ from src.ttea_integration import ImportRunError, import_run as _production_impor
 
 
 def _ensure_test_gate_table(engine):
-    """Create the minimal active-pool gate surface for test databases."""
+    """Create the minimal gate surface required by active UI queries."""
     with engine.begin() as connection:
         connection.exec_driver_sql(
             """CREATE TABLE IF NOT EXISTS ttea_job_decisions (
@@ -40,7 +40,7 @@ def _ensure_test_gate_table(engine):
 
 
 def _mark_all_test_jobs_keep(engine):
-    """Admit fixture jobs without weakening the production gate."""
+    """Treat fixture jobs as admitted while preserving score semantics."""
     _ensure_test_gate_table(engine)
 
     with engine.begin() as connection:
@@ -73,7 +73,7 @@ def _mark_all_test_jobs_keep(engine):
                         ),
                         j.overall_score,
                         0
-                    )
+                    ) AS active_score
                 FROM jobs j
                 """
             ).fetchall()
@@ -87,7 +87,7 @@ def _mark_all_test_jobs_keep(engine):
                 """
             ).fetchall()
 
-        for job_id, score in rows:
+        for job_id, active_score in rows:
             connection.exec_driver_sql(
                 """
                 INSERT INTO ttea_job_decisions (
@@ -103,13 +103,13 @@ def _mark_all_test_jobs_keep(engine):
                 """,
                 (
                     int(job_id),
-                    int(score or 0),
+                    int(active_score or 0),
                 ),
             )
 
 
 def import_run(run_dir, engine):
-    """Test wrapper around the production importer."""
+    """Test wrapper: production import plus mandatory gate fixture evidence."""
     result = _production_import_run(
         run_dir,
         engine,

@@ -533,3 +533,14 @@ def test_analytics_activation_and_session_lifecycle(api):
     assert client.get("/api/application-assistant/analytics/days?timezone=Africa/Tunis").json()["items"][0]["shortlisted"] == 1
     assert client.post(f"/api/application-assistant/sessions/{token}/end", json={"reason": "last_window_closed"}).status_code == 200
     assert client.post("/api/application-assistant/sessions/start", json=payload).json()["session"]["ended_at"] is not None
+
+
+def test_missing_gate_never_exposes_generic_jobs(api):
+    from sqlalchemy.exc import OperationalError
+    with sqlite3.connect(api["db_path"]) as connection:
+        connection.execute("DROP TABLE ttea_job_decisions")
+    # Existing fail-closed SQL must not become an unrestricted fallback query.
+    with pytest.raises(OperationalError):
+        api["client"].get("/api/jobs")
+    with pytest.raises(OperationalError):
+        api["client"].get(f"/api/jobs/{api['job_id']}")
