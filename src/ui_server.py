@@ -2,23 +2,37 @@ from __future__ import annotations
 
 import json
 import re
+import sqlite3
 import subprocess
 import sys
 import threading
-from contextlib import asynccontextmanager
+from contextlib import asynccontextmanager, contextmanager
 from datetime import datetime, timezone, timedelta
+from functools import wraps
 from pathlib import Path
 from typing import Any, Literal
 
 import yaml
-from fastapi import FastAPI, HTTPException, Query
-from fastapi.responses import FileResponse
+from fastapi import FastAPI, HTTPException, Query, Header
+from fastapi.responses import FileResponse, HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 from sqlalchemy import case, func, or_, select, literal_column
 from sqlalchemy.orm import Session, selectinload
 
 from .database import JobORM, JobSourceORM, TteaAssessmentORM, TteaRunORM, get_engine, init_db
+from .production_write_guard import production_write_guard, ProductionWriteSafetyError, BLOCKED_MESSAGE
+from . import application_analytics as analytics
+from .application_assistant import (
+    APPLICATION_STATES,
+    ALLOWED_TRANSITIONS,
+    application_events as aa_application_events,
+    document_library as aa_document_library,
+    ensure_application as aa_ensure_application,
+    get_application as aa_get_application,
+    set_application_url as aa_set_application_url,
+    transition_application as aa_transition_application,
+)
 from .matcher import score_job
 from .models import JobRecord
 
@@ -32,20 +46,8 @@ POLL_STATE_PATH = ROOT / "data" / "source_poll_state.json"
 RUN_STATE_PATH = ROOT / "data" / "ui_run_state.json"
 RUN_HISTORY_PATH = ROOT / "data" / "ui_run_history.json"
 
-REVIEW_STATUSES = ["unreviewed", "shortlisted", "dismissed"]
-APPLICATION_STATUSES = [
-    "not_started",
-    "application_preparing",
-    "ready_to_apply",
-    "applied",
-    "interview",
-    "technical_test",
-    "hr_interview",
-    "offer",
-    "rejected",
-    "withdrawn",
-    "expired",
-]
+REVIEW_STATUSES = ["unreviewed", "shortlisted", "dismissed", "not_eligible"]
+APPLICATION_STATUSES = list(APPLICATION_STATES)
 VERDICTS = ["actionable", "needs_verification", "blocked"]
 
 RUN_LOCK = threading.Lock()
@@ -93,11 +95,34 @@ def _json_field(value: str | None, default):
 settings = _load_yaml(SETTINGS_PATH)
 db_path = ROOT / settings.get("storage", {}).get("sqlite_path", "data/jobs.db")
 engine = get_engine(str(db_path))
+# Configuration identifies production independently of an injected scratch engine.
+PRODUCTION_DB_PATH = db_path.resolve()
+
+
+@contextmanager
+def _production_write_scope(reason: str, *, target_db=None):
+    target = engine.url.database if target_db is None else target_db
+    try:
+        with production_write_guard(target, production_db_path=PRODUCTION_DB_PATH, reason=reason):
+            yield
+    except ProductionWriteSafetyError as exc:
+        raise HTTPException(status_code=503, detail=BLOCKED_MESSAGE) from exc
+
+
+def _guard_production_write(reason: str):
+    def decorate(function):
+        @wraps(function)
+        def guarded(*args, **kwargs):
+            with _production_write_scope(reason):
+                return function(*args, **kwargs)
+        return guarded
+    return decorate
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    init_db(engine)
+    with _production_write_scope("server.initialization"):
+        init_db(engine)
     yield
 
 
@@ -114,6 +139,31 @@ class JobUpdate(BaseModel):
     response: str | None = None
     interview_stage: str | None = None
 
+
+class ApplicationEnsureRequest(BaseModel):
+    source: str = "dashboard"
+
+
+class ApplicationLinkRequest(BaseModel):
+    url: str
+    source: str = "chrome_sidepanel_v1"
+
+class ApplicationTransitionRequest(BaseModel):
+    state: str
+    note: str | None = None
+    source: str = "dashboard"
+    metadata: dict[str, Any] = Field(default_factory=dict)
+
+
+class ApplicationSessionStartRequest(BaseModel):
+    client_id: str = Field(min_length=36, max_length=36)
+    session_token: str = Field(min_length=36, max_length=36)
+    timezone: str = Field(default="UTC", max_length=100)
+    extension_version: str | None = Field(default=None, max_length=40)
+
+
+class ApplicationSessionEndRequest(BaseModel):
+    reason: Literal["last_window_closed"] = "last_window_closed"
 
 class RunRequest(BaseModel):
     limit: int = Field(default=100, ge=1, le=1000)
@@ -267,6 +317,7 @@ def _job_payload(job: JobORM, include_description: bool = False) -> dict:
     return payload
 
 
+
 # TTEA_NEW_AI_ACTIVE_POOL_V1
 def _new_ai_keep_clause():
     """Authoritative admission gate for the active opportunity pool."""
@@ -322,6 +373,144 @@ def _status_counts(session: Session) -> dict[str, int]:
         select(JobORM.application_status, func.count(JobORM.id)).group_by(JobORM.application_status)
     ).all()
     return {status or "not_started": int(count) for status, count in rows}
+
+
+def _application_sqlite_connection(*, readonly: bool):
+    database = engine.url.database
+
+    if not database:
+        raise HTTPException(
+            status_code=503,
+            detail="Application Assistant requires a SQLite database",
+        )
+
+    path = Path(database)
+
+    if readonly:
+        connection = sqlite3.connect(
+            path.resolve().as_uri() + "?mode=ro",
+            uri=True,
+        )
+    else:
+        connection = sqlite3.connect(
+            path
+        )
+
+    connection.execute(
+        "PRAGMA foreign_keys = ON"
+    )
+
+    return connection
+
+
+def _require_application_job(job_id: int) -> None:
+    with Session(engine) as session:
+        exists = session.scalar(
+            select(JobORM.id)
+            .where(JobORM.id == job_id)
+        )
+
+    if exists is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Job not found",
+        )
+
+
+def _application_document_links(
+    connection,
+    application_id: int | None,
+) -> list[dict]:
+
+    if application_id is None:
+        return []
+
+    rows = connection.execute(
+        """
+        SELECT
+            ad.id,
+            ad.role,
+            ad.selection_mode,
+            ad.active,
+            ad.attached_at,
+            dl.id,
+            dl.document_key,
+            dl.kind,
+            dl.language,
+            dl.niche,
+            dl.format,
+            dl.file_path,
+            dl.sha256,
+            dl.is_generated
+        FROM application_documents AS ad
+        JOIN document_library AS dl
+          ON dl.id = ad.document_id
+        WHERE ad.application_id = ?
+        ORDER BY ad.active DESC, ad.id
+        """,
+        (application_id,),
+    ).fetchall()
+
+    return [
+        {
+            "link_id": row[0],
+            "role": row[1],
+            "selection_mode": row[2],
+            "active": bool(row[3]),
+            "attached_at": row[4],
+            "document": {
+                "id": row[5],
+                "document_key": row[6],
+                "kind": row[7],
+                "language": row[8],
+                "niche": row[9],
+                "format": row[10],
+                "file_path": row[11],
+                "sha256": row[12],
+                "is_generated": bool(row[13]),
+            },
+        }
+        for row in rows
+    ]
+
+
+def _application_bundle(job_id: int) -> dict:
+    _require_application_job(
+        job_id
+    )
+
+    connection = _application_sqlite_connection(
+        readonly=True
+    )
+
+    try:
+        application = aa_get_application(
+            connection,
+            job_id,
+        )
+
+        events = aa_application_events(
+            connection,
+            job_id,
+        )
+
+        documents = _application_document_links(
+            connection,
+            (
+                application["id"]
+                if application
+                else None
+            ),
+        )
+
+    finally:
+        connection.close()
+
+    return {
+        "application": application,
+        "events": events,
+        "documents": documents,
+    }
 
 
 def _active_status_counts(session: Session) -> dict[str, int]:
@@ -747,8 +936,14 @@ def get_job(job_id: int):
 
 
 @app.patch("/api/jobs/{job_id}")
-def update_job(job_id: int, payload: JobUpdate):
+@_guard_production_write("job.update")
+def update_job(
+    job_id: int, payload: JobUpdate,
+    session_token: str | None = Header(default=None, alias="X-TTEA-Session-Token"),
+):
     with Session(engine) as session:
+        if session_token:
+            session.connection().exec_driver_sql("BEGIN IMMEDIATE")
         job = session.scalar(
             select(JobORM)
             .options(selectinload(JobORM.sources))
@@ -760,6 +955,7 @@ def update_job(job_id: int, payload: JobUpdate):
         if not job:
             raise HTTPException(status_code=404, detail="Job not found")
 
+        previous_review = job.review_status
         if payload.review_status is not None:
             if payload.review_status not in REVIEW_STATUSES:
                 raise HTTPException(status_code=400, detail="Invalid review status")
@@ -792,9 +988,397 @@ def update_job(job_id: int, payload: JobUpdate):
             job.interview_stage = payload.interview_stage.strip() or None
             job.updated_at = datetime.now(timezone.utc)
 
+        if session_token and payload.review_status != previous_review and payload.review_status in analytics.REVIEW_ACTIONS:
+            session.flush()
+            raw_connection = session.connection().connection.driver_connection
+            analytics.record_activity(raw_connection, session_token,
+                analytics.REVIEW_ACTIONS[payload.review_status], job_id)
         session.commit()
         session.refresh(job)
         return _job_payload(job, include_description=True)
+
+
+def _analytics_operation(operation, *, write=False, reason="session.mutation"):
+    if write:
+        with _production_write_scope(reason):
+            return _analytics_operation_impl(operation, write=True)
+    return _analytics_operation_impl(operation)
+
+
+def _analytics_operation_impl(operation, *, write=False):
+    connection = _application_sqlite_connection(readonly=not write)
+    try:
+        # Reports use a single read snapshot; lifecycle writes serialize by client.
+        connection.execute("BEGIN IMMEDIATE" if write else "BEGIN")
+        result = operation(connection)
+        if write:
+            connection.commit()
+            analytics.log_event("Session lifecycle request committed")
+        return result
+    except ValueError as exc:
+        if write:
+            connection.rollback()
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    except LookupError as exc:
+        if write:
+            connection.rollback()
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+    except sqlite3.Error as exc:
+        if write:
+            connection.rollback()
+        analytics.log_event("Analytics storage unavailable")
+        raise HTTPException(status_code=503, detail="Analytics storage unavailable. Migration 003 must be activated separately.") from exc
+    finally:
+        connection.close()
+
+
+@app.post("/api/application-assistant/sessions/start")
+def application_session_start(payload: ApplicationSessionStartRequest):
+    return {"session": _analytics_operation(lambda connection: analytics.start_session(
+        connection, payload.client_id, payload.session_token, payload.timezone, payload.extension_version,
+    ), write=True, reason="session.start")}
+
+
+@app.post("/api/application-assistant/sessions/{session_token}/heartbeat")
+def application_session_heartbeat(session_token: str):
+    return {"session": _analytics_operation(lambda connection: analytics.touch_session(connection, session_token), write=True, reason="session.heartbeat")}
+
+
+@app.post("/api/application-assistant/sessions/{session_token}/end")
+def application_session_end(session_token: str, payload: ApplicationSessionEndRequest):
+    return {"session": _analytics_operation(lambda connection: analytics.touch_session(connection, session_token, end=True), write=True, reason="session.end")}
+
+
+@app.get("/api/application-assistant/tracker")
+def application_tracker(
+    state: str = "all", search: str = "", company: str = "",
+    limit: int = Query(default=50, ge=1, le=200), offset: int = Query(default=0, ge=0),
+):
+    if state != "all" and state not in APPLICATION_STATES:
+        raise HTTPException(status_code=400, detail="Unknown application state")
+    result = _analytics_operation(lambda connection: analytics.tracker(connection, state, search or company, limit, offset))
+    with Session(engine) as session:
+        for item in result["items"]:
+            job = session.scalar(select(JobORM).options(selectinload(JobORM.sources)).where(JobORM.id == item["job_id"]))
+            if job is not None:
+                presentation = _job_payload(job)
+                item["score"] = presentation["score"]
+                item["verdict"] = presentation["verdict"]
+    return result
+
+
+@app.get("/api/application-assistant/analytics/sessions")
+def application_session_analytics(
+    limit: int = Query(default=30, ge=1, le=200), timezone: str = "UTC",
+):
+    return _analytics_operation(lambda connection: analytics.session_analytics(connection, limit, timezone))
+
+
+@app.get("/api/application-assistant/analytics/days")
+def application_daily_analytics(
+    days: int = Query(default=14, ge=1, le=366), timezone: str = "UTC",
+):
+    return _analytics_operation(lambda connection: analytics.daily_analytics(connection, days, timezone))
+
+@app.get("/api/application-assistant/states")
+def application_assistant_states():
+    return {
+        "states": list(APPLICATION_STATES),
+        "transitions": {
+            state: sorted(
+                ALLOWED_TRANSITIONS[state]
+            )
+            for state in APPLICATION_STATES
+        },
+    }
+
+
+@app.get("/api/application-assistant/followups")
+def application_assistant_followups():
+    active_states = (
+        "applied", "awaiting_response", "assessment", "interview",
+        "technical_test", "hr_interview", "offer",
+    )
+    connection = _application_sqlite_connection(readonly=True)
+    try:
+        rows = connection.execute(
+            """
+            SELECT a.job_id, a.current_state, a.application_url,
+                   a.submitted_at, a.last_activity_at
+            FROM applications AS a
+            JOIN jobs AS j ON j.id = a.job_id
+            WHERE a.current_state IN (?, ?, ?, ?, ?, ?, ?)
+            ORDER BY a.last_activity_at DESC, a.id DESC
+            """,
+            active_states,
+        ).fetchall()
+    finally:
+        connection.close()
+
+    # Reuse the existing job presentation, including its primary score origin.
+    items = []
+    with Session(engine) as session:
+        for job_id, state, url, submitted_at, last_activity_at in rows:
+            job = session.scalar(
+                select(JobORM)
+                .options(selectinload(JobORM.sources))
+                .where(JobORM.id == job_id)
+            )
+            if job is None:
+                continue
+            item = _job_payload(job)
+            item.update({
+                "job_id": job_id,
+                "current_state": state,
+                "application_status": state,
+                "application_url": url,
+                "submitted_at": submitted_at,
+                "last_activity_at": last_activity_at,
+            })
+            items.append(item)
+    return {"items": items, "total": len(items), "active_states": list(active_states)}
+
+@app.get("/api/application-assistant/documents")
+def application_assistant_documents(
+    kind: str = "all",
+    language: str = "all",
+    niche: str = "all",
+    format: str = "all",
+):
+    normalized_kind = kind.strip().lower()
+    normalized_language = language.strip().upper()
+    normalized_niche = niche.strip().lower()
+    normalized_format = format.strip().lower()
+
+    if normalized_kind not in {
+        "all",
+        "cv",
+        "motivation_letter",
+    }:
+        raise HTTPException(
+            status_code=400,
+            detail="Invalid document kind",
+        )
+
+    if normalized_language not in {
+        "ALL",
+        "EN",
+        "FR",
+    }:
+        raise HTTPException(
+            status_code=400,
+            detail="Invalid document language",
+        )
+
+    if normalized_format not in {
+        "all",
+        "pdf",
+        "docx",
+    }:
+        raise HTTPException(
+            status_code=400,
+            detail="Invalid document format",
+        )
+
+    connection = _application_sqlite_connection(
+        readonly=True
+    )
+
+    try:
+        rows = aa_document_library(
+            connection
+        )
+    finally:
+        connection.close()
+
+    if normalized_kind != "all":
+        rows = [
+            row
+            for row in rows
+            if row["kind"] == normalized_kind
+        ]
+
+    if normalized_language != "ALL":
+        rows = [
+            row
+            for row in rows
+            if row["language"] == normalized_language
+        ]
+
+    if normalized_niche != "all":
+        rows = [
+            row
+            for row in rows
+            if row["niche"] == normalized_niche
+        ]
+
+    if normalized_format != "all":
+        rows = [
+            row
+            for row in rows
+            if row["format"] == normalized_format
+        ]
+
+    return {
+        "items": rows,
+        "total": len(rows),
+    }
+
+
+@app.get("/api/jobs/{job_id}/application")
+def get_job_application(job_id: int):
+    return _application_bundle(
+        job_id
+    )
+
+
+@app.post("/api/jobs/{job_id}/application")
+@_guard_production_write("application.ensure")
+def ensure_job_application(
+    job_id: int,
+    payload: ApplicationEnsureRequest | None = None,
+):
+    _require_application_job(
+        job_id
+    )
+
+    request = (
+        payload
+        or ApplicationEnsureRequest()
+    )
+
+    connection = _application_sqlite_connection(
+        readonly=False
+    )
+
+    try:
+        aa_ensure_application(
+            connection,
+            job_id,
+            actor="user",
+            source=request.source,
+        )
+
+        connection.commit()
+
+    except Exception:
+        connection.rollback()
+        raise
+
+    finally:
+        connection.close()
+
+    return _application_bundle(
+        job_id
+    )
+
+
+@app.patch("/api/jobs/{job_id}/application/link")
+@_guard_production_write("application.link")
+def save_job_application_link(
+    job_id: int, payload: ApplicationLinkRequest,
+    session_token: str | None = Header(default=None, alias="X-TTEA-Session-Token"),
+):
+    _require_application_job(job_id)
+    connection = _application_sqlite_connection(readonly=False)
+    try:
+        # Serialize read/replace/event provenance, including concurrent saves.
+        connection.execute("BEGIN IMMEDIATE")
+        before = aa_get_application(connection, job_id)
+        application = aa_set_application_url(
+            connection, job_id, payload.url, actor="user", source=payload.source,
+        )
+        previous_url = before["application_url"] if before else None
+        if previous_url != application["application_url"]:
+            analytics.record_activity(connection, session_token,
+                "application.link_replaced" if previous_url else "application.link_saved",
+                job_id, application["id"])
+        connection.commit()
+    except ValueError as exc:
+        connection.rollback()
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    except Exception:
+        connection.rollback()
+        raise
+    finally:
+        connection.close()
+    return {"application": application}
+
+@app.post("/api/jobs/{job_id}/application/transition")
+@_guard_production_write("application.transition")
+def transition_job_application(
+    job_id: int,
+    payload: ApplicationTransitionRequest,
+    session_token: str | None = Header(default=None, alias="X-TTEA-Session-Token"),
+):
+    _require_application_job(
+        job_id
+    )
+
+    connection = _application_sqlite_connection(
+        readonly=False
+    )
+
+    try:
+        try:
+            connection.execute("BEGIN IMMEDIATE")
+            before = aa_get_application(connection, job_id)
+            old_state = before["current_state"] if before else connection.execute(
+                "SELECT application_status FROM jobs WHERE id=?", (job_id,)
+            ).fetchone()[0]
+            if old_state not in APPLICATION_STATES:
+                old_state = "not_started"
+            application = aa_transition_application(
+                connection,
+                job_id,
+                payload.state,
+                actor="user",
+                source=payload.source,
+                note=payload.note,
+                metadata=payload.metadata,
+            )
+
+        except ValueError as exc:
+            connection.rollback()
+
+            raise HTTPException(
+                status_code=400,
+                detail=str(exc),
+            ) from exc
+
+        if old_state != application["current_state"]:
+            if payload.metadata.get("mode") == "followup" or old_state in {
+                "applied", "awaiting_response", "assessment", "interview",
+                "technical_test", "hr_interview", "offer",
+            }:
+                action = "followup.transition"
+                activity_metadata = {"from_state": old_state, "to_state": application["current_state"]}
+            else:
+                historical = payload.metadata.get("historical_application") is True
+                action = {
+                    "applied": "review.already_applied" if historical else "review.applied",
+                    "expired": "review.expired", "not_interested": "review.not_interested",
+                }.get(application["current_state"])
+                activity_metadata = ({"historical_application": True, "application_date_unknown": True}
+                                     if historical else {})
+            if action:
+                analytics.record_activity(connection, session_token, action,
+                    job_id, application["id"], activity_metadata)
+        connection.commit()
+
+    except HTTPException:
+        raise
+
+    except Exception:
+        connection.rollback()
+        raise
+
+    finally:
+        connection.close()
+
+    return _application_bundle(
+        job_id
+    )
 
 
 @app.get("/api/applications")
@@ -831,6 +1415,7 @@ def profile():
 
 
 @app.patch("/api/profile")
+@_guard_production_write("profile.update")
 def update_profile(payload: ProfileUpdate):
     global settings
     profile_data = payload.profile
@@ -946,36 +1531,50 @@ def _run_collection_worker(run_id: str, limit: int, ignore_poll_interval: bool, 
         cmd.extend(["--sources", ",".join(selected_sources)])
 
     try:
-        RUN_PROCESS = subprocess.Popen(
-            cmd,
-            cwd=str(ROOT),
-            stdout=subprocess.PIPE,
-            stderr=subprocess.STDOUT,
-            text=True,
-            encoding="utf-8",
-            errors="replace",
-            bufsize=1,
-        )
-        if RUN_PROCESS.stdout is not None:
-            for raw_line in RUN_PROCESS.stdout:
-                line = raw_line.rstrip("\r\n")
-                if not line:
-                    continue
+        # The child reads the project configuration rather than an injected engine.
+        collector_target = ROOT / _load_yaml(SETTINGS_PATH).get("storage", {}).get("sqlite_path", "data/jobs.db")
+        with _production_write_scope("collection.run", target_db=collector_target):
+            try:
+                RUN_PROCESS = subprocess.Popen(
+                    cmd,
+                    cwd=str(ROOT),
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.STDOUT,
+                    text=True,
+                    encoding="utf-8",
+                    errors="replace",
+                    bufsize=1,
+                )
+                if RUN_PROCESS.stdout is not None:
+                    for raw_line in RUN_PROCESS.stdout:
+                        line = raw_line.rstrip("\r\n")
+                        if not line:
+                            continue
+                        state = _read_run_state()
+                        _parse_run_line(state, line)
+                        _write_run_state(state)
+                return_code = RUN_PROCESS.wait()
                 state = _read_run_state()
-                _parse_run_line(state, line)
+                state["return_code"] = return_code
+                if state.get("stop_requested"):
+                    state["status"] = "stopped"
+                    state["phase"] = "Stopped by user"
+                else:
+                    state["status"] = "success" if return_code == 0 else "failed"
+                    state["phase"] = "Completed" if return_code == 0 else "Failed"
+                state["finished_at"] = datetime.now(timezone.utc).isoformat()
                 _write_run_state(state)
-        return_code = RUN_PROCESS.wait()
-        state = _read_run_state()
-        state["return_code"] = return_code
-        if state.get("stop_requested"):
-            state["status"] = "stopped"
-            state["phase"] = "Stopped by user"
-        else:
-            state["status"] = "success" if return_code == 0 else "failed"
-            state["phase"] = "Completed" if return_code == 0 else "Failed"
-        state["finished_at"] = datetime.now(timezone.utc).isoformat()
-        _write_run_state(state)
-        _append_history(state)
+                _append_history(state)
+            finally:
+                # A failed output/state update must not release the guard while
+                # its child can still write the production database.
+                if RUN_PROCESS is not None and RUN_PROCESS.poll() is None:
+                    RUN_PROCESS.terminate()
+                    try:
+                        RUN_PROCESS.wait(timeout=5)
+                    except subprocess.TimeoutExpired:
+                        RUN_PROCESS.kill()
+                        RUN_PROCESS.wait()
     except Exception as exc:
         state = _read_run_state()
         state["status"] = "failed"

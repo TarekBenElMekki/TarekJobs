@@ -1,4 +1,4 @@
-﻿.venv/
+.venv/
 venv/
 __pycache__/
 *.py[cod]
@@ -9,3 +9,7 @@ __pycache__/
 .env
 .env.*
 !.env.example
+
+# Local runtime activity and acquisition locks
+logs/*.log*
+data/.coverage_locks/
