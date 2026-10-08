@@ -13,3 +13,28 @@ __pycache__/
 # Local runtime activity and acquisition locks
 logs/*.log*
 data/.coverage_locks/
+
+# Generated local state; explicit fixtures remain versioned
+/backups/
+/logs/*
+!/logs/.gitkeep
+/data/raw/*
+!/data/raw/.gitkeep
+/data/phase1/
+/data/exports/*
+!/data/exports/.gitkeep
+/data/source_poll_state.json
+/data/ui_run_state.json
+/data/ui_run_history.json
+*.db-wal
+*.db-shm
+*.db-journal
+*.sqlite-wal
+*.sqlite-shm
+*.sqlite-journal
+*.sqlite3-wal
+*.sqlite3-shm
+*.sqlite3-journal
+
+# Legacy browser captures may contain third-party credentials
+/data/fixtures/

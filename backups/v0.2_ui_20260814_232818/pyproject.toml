@@ -1,9 +1,0 @@
-[project]
-name = "tarekjobs"
-version = "0.1.0"
-description = "Personal job-market aggregation, normalization, matching and tracking system"
-requires-python = ">=3.11"
-
-[tool.pytest.ini_options]
-testpaths = ["tests"]
-addopts = "-q"

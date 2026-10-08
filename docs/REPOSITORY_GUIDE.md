@@ -96,6 +96,8 @@ Production databases and SQLite sidecars, logs, coverage locks, caches, local
 backups, raw runtime acquisition, OCR output, exports, polling state and UI run
 state/history are excluded from the current Git tree. Previously tracked runtime
 and backup files are removed from the index only; local bytes are preserved.
-`data/fixtures` and `tests/fixtures` remain explicit historical/offline fixtures.
+`tests/fixtures` remains the explicit offline fixture library. Legacy browser
+captures under `data/fixtures` are local-only: four old captures contain
+API-key-shaped values from captured website content and are not test inputs.
 No production database contents are added to Git. Historical commits are retained;
 repository hygiene does not rewrite the frozen checkpoint or earlier history.
