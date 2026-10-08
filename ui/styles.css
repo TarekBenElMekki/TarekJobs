@@ -1516,3 +1516,20 @@ button.register-row:hover {
 .ttea-runs{width:100%;border-collapse:collapse;font-size:12px;text-align:left}
 .ttea-runs th,.ttea-runs td{padding:10px 8px;border-bottom:1px solid currentColor;vertical-align:top}
 .ttea-runs th{font-size:10px;letter-spacing:.04em}
+
+/* V1.3 normalized application tracker and session analytics. */
+.assistant-filters { display: flex; flex-wrap: wrap; gap: 16px; padding: 14px; border-top: 1px solid var(--rule-soft); }
+.assistant-filters label { display: grid; gap: 6px; min-width: 180px; }
+.assistant-filters input, .assistant-filters select { padding: 9px; background: var(--paper-light); border: 1px solid var(--rule-soft); color: var(--ink); font: inherit; }
+.assistant-counts { display: flex; flex-wrap: wrap; gap: 1px; padding: 0 14px 14px; }
+.assistant-count { display: grid; gap: 6px; padding: 12px; min-width: 125px; border: 1px solid var(--rule-soft); }
+.assistant-count strong { font-size: 22px; }
+.assistant-count span { font-size: 10px; }
+.assistant-note { padding: 0 14px; color: var(--ink-soft); }
+.assistant-table-wrap { overflow-x: auto; }
+.assistant-table { border-collapse: collapse; width: 100%; text-align: left; }
+.assistant-table th, .assistant-table td { padding: 11px; border-top: 1px solid var(--rule-soft); vertical-align: top; min-width: 90px; }
+.assistant-table th { font-size: 10px; background: var(--paper-dark); }
+.assistant-table td { font-size: 12px; }
+.assistant-table td:nth-child(2) { min-width: 175px; }
+.assistant-table .button { white-space: nowrap; }

@@ -8,7 +8,7 @@
   <link rel="icon" type="image/x-icon" href="/assets/tarekjobs-v0451.ico?v=0451" />
   <link rel="icon" type="image/png" sizes="512x512" href="/assets/tarekjobs-logo-hd.png?v=0451" />
   <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
-  <link rel="stylesheet" href="/assets/styles.css?v=0451" />
+  <link rel="stylesheet" href="/assets/styles.css?v=0130" />
   <link rel="icon" type="image/png" sizes="64x64" href="/assets/tarekjobs-icon-64.png?v=0451" />
 </head>
 <body>
@@ -29,6 +29,7 @@
         <button class="nav-item" data-view="sources"><span>04</span> SOURCES</button>
         <button class="nav-item" data-view="pipeline"><span>05</span> RUNS</button>
         <button class="nav-item" data-view="profile"><span>06</span> PROFILE</button>
+        <button class="nav-item" data-view="analytics"><span>08</span> ANALYTICS</button>
       </nav>
       <div class="sidebar-footer">
         <div class="connection-row"><span class="status-dot" id="connectionDot"></span><span id="connectionText">CONNECTING</span></div>
@@ -82,11 +83,32 @@
 
       <section class="view" id="view-applications">
         <section class="ledger-section">
-          <div class="section-head"><div><div class="section-label">A / APPLICATION REGISTER</div><h2>WHAT APPLICATIONS NEED MY ATTENTION?</h2></div><div class="section-note">A job enters here only after SHORTLIST or after application work begins.</div></div>
-          <div id="applicationBoard" class="kanban"></div>
+          <div class="section-head"><div><div class="section-label">A / APPLICATION TRACKER</div><h2>APPLICATION PIPELINE</h2></div><div class="section-note">All normalized applications. Update lifecycle in the Chrome side panel.</div></div>
+          <div id="applicationCounts" class="assistant-counts"></div>
+          <div class="assistant-filters">
+            <label><span>STATUS</span><select id="trackerState"><option value="all">ALL STATES</option></select></label>
+            <label><span>SEARCH</span><input id="trackerSearch" type="search" placeholder="TITLE / COMPANY / LOCATION"></label>
+          </div>
+          <div id="applicationBoard" class="assistant-table-wrap" aria-live="polite"></div>
+          <div class="pagination"><button class="button" id="trackerPrev">&lt;&lt; PREVIOUS</button><span id="trackerPage"></span><button class="button" id="trackerNext">NEXT &gt;&gt;</button></div>
         </section>
       </section>
 
+      <section class="view" id="view-analytics">
+        <section class="ledger-section">
+          <div class="section-head"><div><div class="section-label">A / TODAY</div><h2>APPLICATION WORK</h2></div><div id="analyticsTimezone" class="section-note"></div></div>
+          <p class="assistant-note">Activity starts with V1.3 activation. Session time measures browser-session presence, not focused work.</p>
+          <div id="analyticsToday" class="assistant-counts" aria-live="polite"></div>
+        </section>
+        <section class="ledger-section">
+          <div class="section-head"><div><div class="section-label">B / RECENT SESSIONS</div><h2>BROWSER WORK SESSIONS</h2></div></div>
+          <div id="analyticsSessions" class="assistant-table-wrap"></div>
+        </section>
+        <section class="ledger-section">
+          <div class="section-head"><div><div class="section-label">C / DAILY ANALYTICS</div><h2>LAST 14 CALENDAR DAYS</h2></div></div>
+          <div id="analyticsDays" class="assistant-table-wrap"></div>
+        </section>
+      </section>
       <section class="view" id="view-sources">
         <section class="ledger-section">
           <div class="section-head"><div><div class="section-label">A / COVERAGE REGISTER</div><h2>HOW COMPLETE AND HEALTHY IS MY MARKET COVERAGE?</h2></div><div id="sourceCoverageSummary" class="section-note">LOADING</div></div>
@@ -127,6 +149,6 @@
   <div class="modal-backdrop hidden" id="profileModal"><div class="modal profile-modal" role="dialog" aria-modal="true"><div class="modal-head"><div><div class="eyebrow">MATCHING CONFIGURATION</div><h2>EDIT PROFILE RULES</h2></div><button class="icon-button" id="closeProfileModal">[X]</button></div><div class="modal-body" id="profileModalBody"></div></div></div>
 
   <div class="toast hidden" id="toast" role="status"></div>
-  <script src="/assets/app.js?v=0451" defer></script>
+  <script src="/assets/app.js?v=0130" defer></script>
 </body>
 </html>
