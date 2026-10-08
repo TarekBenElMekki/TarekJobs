@@ -29,6 +29,7 @@
         <button class="nav-item" data-view="sources"><span>04</span> SOURCES</button>
         <button class="nav-item" data-view="pipeline"><span>05</span> RUNS</button>
         <button class="nav-item" data-view="profile"><span>06</span> PROFILE</button>
+        <button class="nav-item" data-view="hunt"><span>07</span> HUNT</button>
         <button class="nav-item" data-view="analytics"><span>08</span> ANALYTICS</button>
       </nav>
       <div class="sidebar-footer">
@@ -133,6 +134,20 @@
           <div class="run-meta-grid" id="runMeta"></div>
           <div class="run-grid"><div><div class="subhead">SOURCE PROGRESS</div><div id="runSourceProgress" class="source-progress"></div></div><div><div class="subhead">LIVE PROCESS OUTPUT</div><pre id="runLogs" class="log-console">NO UI-MANAGED RUN YET.</pre></div></div>
         </section>
+      </section>
+
+      <section class="view" id="view-hunt">
+        <div class="hunt-status-bar"><div><span class="section-label">T/TEA / OPERATIONS TERMINAL</span><h2>LIVE JOB DISCOVERY</h2><p id="huntMessage">T/TEA LIVE SOURCE NOT CONFIGURED</p></div><span id="huntStatus" class="hunt-status">IDLE</span></div>
+        <div id="huntRunMeta" class="hunt-meta">AWAITING LOCAL OBSERVATION CHANNEL</div>
+        <div id="huntCounters" class="hunt-counters"></div>
+        <div class="hunt-grid">
+          <section class="hunt-panel hunt-checklist-panel"><div class="hunt-panel-head"><span>01 / EXECUTION CHECKLIST</span><span>LIVE</span></div><div id="huntChecklist"></div><p class="hunt-readonly">OBSERVATION ONLY<br>Job hunts start through the T/TEA CLI.</p></section>
+          <section class="hunt-panel hunt-observer-panel"><div class="hunt-panel-head"><span>02 / SOURCE OBSERVER</span><span id="huntObserverLabel">WAITING</span></div><div class="hunt-browser-bar"><strong>KEEJOB</strong><span id="huntObservedUrl">NO PAGE RECEIVED</span><span>READ ONLY</span></div><div class="hunt-viewport"><div id="huntObserverEmpty" class="hunt-observer-empty">WAITING FOR SOURCE OBSERVATION</div><iframe id="huntObserverFrame" title="Read-only captured T/TEA source page" sandbox="" referrerpolicy="no-referrer" hidden></iframe></div><div id="huntObserverMeta" class="hunt-observer-meta">NO REMOTE BROWSER SESSION</div></section>
+          <section class="hunt-panel hunt-item-panel"><div class="hunt-panel-head"><span>03 / CURRENT ITEM</span><span id="huntItemAction">STANDBY</span></div><div id="huntItem" class="hunt-item"><p>No current item.</p></div></section>
+          <section class="hunt-panel hunt-decision-panel"><div class="hunt-panel-head"><span>04 / DECISION &amp; EXTRACTION</span><span id="huntDecision">--</span></div><div id="huntEvidence" class="hunt-item">Waiting for job evidence.</div></section>
+        </div>
+        <section class="hunt-panel hunt-feed-panel"><div class="hunt-panel-head"><span>05 / LIVE EVENT FEED</span><label><input id="huntAutoscroll" type="checkbox" checked> AUTO-SCROLL</label></div><div id="huntFeed" class="hunt-feed" aria-label="Recent hunt events">NO EVENTS RECEIVED</div></section>
+        <section id="huntSummary" class="hunt-summary" hidden></section>
       </section>
 
       <section class="view" id="view-profile">

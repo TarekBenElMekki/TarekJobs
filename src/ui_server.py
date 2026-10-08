@@ -23,6 +23,7 @@ from sqlalchemy.orm import Session, selectinload
 from .database import JobORM, JobSourceORM, TteaAssessmentORM, TteaRunORM, get_engine, init_db
 from .production_write_guard import production_write_guard, ProductionWriteSafetyError, BLOCKED_MESSAGE
 from . import application_analytics as analytics
+from . import ttea_live
 from . import ttea_batch_import as canonical_batches
 from .application_assistant import (
     APPLICATION_STATES,
@@ -1694,6 +1695,25 @@ def stop_run():
     if RUN_PROCESS is not None and RUN_PROCESS.poll() is None:
         RUN_PROCESS.terminate()
     return state
+
+
+@app.get("/api/ttea/live")
+def ttea_live_state():
+    return JSONResponse(ttea_live.state(), headers={"Cache-Control": "no-store"})
+
+
+@app.get("/api/ttea/live/events")
+def ttea_live_events(run_id: str | None = None, limit: int = Query(default=100, ge=1, le=100)):
+    return JSONResponse(ttea_live.events(run_id, limit), headers={"Cache-Control": "no-store"})
+
+
+@app.get("/api/ttea/live/observer")
+def ttea_live_observer(run_id: str | None = None, page: str = "detail"):
+    content = ttea_live.observer(run_id, page)
+    return HTMLResponse(content or "<p>WAITING FOR SOURCE OBSERVATION</p>", status_code=200 if content else 404,
+                        headers={"Content-Security-Policy": "default-src 'none'; style-src 'unsafe-inline'; sandbox; base-uri 'none'; form-action 'none'; frame-ancestors 'self'",
+                                 "X-Content-Type-Options": "nosniff", "Cache-Control": "no-store",
+                                 "Referrer-Policy": "no-referrer"})
 
 
 @app.get("/api/ttea/batches/{batch_id}/jobs")

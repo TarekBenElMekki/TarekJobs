@@ -1,4 +1,5 @@
 const state = {
+  huntTimer: null, huntBusy: false, huntObserverKey: '',
   view: 'overview', profile: null, settings: null, reviewStatuses: [], applicationStatuses: [],
   sources: [], jobsPage: 1, jobsPages: 1, jobsPageSize: 25, jobsDebounce: null,
   jobsMode: 'review', runTimer: null, currentJobId: null, bootstrapRetries: 0,
@@ -6,6 +7,7 @@ const state = {
 
 const viewMeta = {
   analytics: ['08','ANALYTICS','APPLICATION SESSIONS / LOCAL CALENDAR DAYS'],
+  hunt: ['07','HUNT','LIVE T/TEA JOB DISCOVERY / READ-ONLY OBSERVATION'],
   overview: ['01','OVERVIEW','QUESTION: WHAT CHANGED IN MY MARKET DATABASE?'],
   jobs: ['02','JOBS','QUESTION: WHICH OPPORTUNITIES SHOULD I REVIEW OR PURSUE?'],
   applications: ['03','APPLICATIONS','QUESTION: WHAT APPLICATIONS NEED MY ATTENTION?'],
@@ -28,7 +30,7 @@ function fieldValue(id,fallback=''){const e=byId(id);return e&&('value' in e)?e.
 async function api(path,options={}){ const r=await fetch(path,{headers:{'Content-Type':'application/json',...(options.headers||{})},...options}); if(!r.ok){let d=`HTTP ${r.status}`;try{const b=await r.json();d=typeof b.detail==='string'?b.detail:(b.detail?.message||JSON.stringify(b.detail||b));}catch{} throw new Error(d);} return r.json(); }
 function toast(msg,error=false){const e=document.getElementById('toast');e.textContent=`${error?'ERROR':'NOTICE'} :: ${msg}`;e.classList.remove('hidden');clearTimeout(toast.timer);toast.timer=setTimeout(()=>e.classList.add('hidden'),3500);}
 function handleError(e){toast(e?.message||String(e),true);}
-function setView(v){state.view=v;document.querySelectorAll('.view').forEach(x=>x.classList.toggle('active',x.id===`view-${v}`));document.querySelectorAll('.nav-item').forEach(x=>x.classList.toggle('active',x.dataset.view===v));const m=viewMeta[v];document.getElementById('viewNumber').textContent=m[0];document.getElementById('viewTitle').textContent=m[1];document.getElementById('viewSubtitle').textContent=m[2];refreshCurrent().catch(handleError);}
+function setView(v){clearTimeout(state.huntTimer);state.view=v;document.querySelectorAll('.view').forEach(x=>x.classList.toggle('active',x.id===`view-${v}`));document.querySelectorAll('.nav-item').forEach(x=>x.classList.toggle('active',x.dataset.view===v));const m=viewMeta[v];document.getElementById('viewNumber').textContent=m[0];document.getElementById('viewTitle').textContent=m[1];document.getElementById('viewSubtitle').textContent=m[2];refreshCurrent().catch(handleError);}
 function snapshot(i,label,value,note){return `<div class="snapshot-cell"><div class="snapshot-index">${i}</div><div class="snapshot-value">${esc(value)}</div><div class="snapshot-label">${esc(label)}</div><div class="snapshot-note">${esc(note)}</div></div>`;}
 function header(cols){return `<div class="register-row header">${cols.map(c=>`<div class="register-cell">${esc(c)}</div>`).join('')}</div>`;}
 
@@ -209,7 +211,7 @@ async function saveProfile(){
 }
 
 
-async function refreshCurrent(){if(state.view==='overview')return loadOverview();if(state.view==='jobs')return loadJobs();if(state.view==='applications')return loadApplications();if(state.view==='analytics')return loadApplicationAnalytics();if(state.view==='sources')return loadSources();if(state.view==='pipeline')return loadPipeline();if(state.view==='profile')return loadProfile();}
+async function refreshCurrent(){if(state.view==='hunt')return loadHunt();if(state.view==='overview')return loadOverview();if(state.view==='jobs')return loadJobs();if(state.view==='applications')return loadApplications();if(state.view==='analytics')return loadApplicationAnalytics();if(state.view==='sources')return loadSources();if(state.view==='pipeline')return loadPipeline();if(state.view==='profile')return loadProfile();}
 function scheduleJobs(){clearTimeout(state.jobsDebounce);state.jobsDebounce=setTimeout(()=>{state.jobsPage=1;loadJobs().catch(handleError);},220);}
 async function bootstrap(){
   try{
@@ -251,7 +253,7 @@ bootstrap();
 
 function primaryScore(job){return job.score?.value??job.scores.overall;}
 function renderTteaAssessment(a){
-  const list=items=>items.length?`<ul>${items.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>`:'<p>NONE PROVIDED</p>';
+  const list=items=>items.length?`<ul>${items.map(x=>`<li>${esc(typeof x==='string'?x:(x.claim||x.requirement||JSON.stringify(x)))}</li>`).join('')}</ul>`:'<p>NONE PROVIDED</p>';
   return `<section class="ttea-assessment"><h3>T/TEA ASSESSMENT</h3><div class="big-score ${scoreClass(a.score)}">${a.score}/100</div><h3>STRENGTHS</h3>${list(a.strengths||[])}<h3>GAPS</h3>${list(a.gaps||[])}<h3>EXPLANATION</h3><p>${esc(a.explanation||'NONE PROVIDED')}</p><div class="job-subline">${esc(a.provider||'--')} / ${esc(a.model||'--')}</div><div class="job-subline">RUN ${esc(a.run_id)}<br>ASSESSED ${esc(fmtDateTime(a.scored_at))} / IMPORTED ${esc(fmtDateTime(a.imported_at))}</div></section>`;
 }
 async function loadTteaRuns(){
@@ -259,6 +261,54 @@ async function loadTteaRuns(){
   const target=document.getElementById('tteaRunHistory');
   if(!data.items.length){target.innerHTML='<div class="empty">NO T/TEA RUNS IMPORTED.</div>';return;}
   target.innerHTML=`<table class="ttea-runs"><thead><tr>${['RUN / STATUS','SOURCE','DISCOVERED','SCORED','SOURCE REQUESTS','CACHE HITS','CLOUD REQUESTS','MODEL','IMPORTED'].map(x=>`<th>${x}</th>`).join('')}</tr></thead><tbody>${data.items.map(r=>{const c=r.counts||{};return `<tr><td>${esc(r.run_id)}<br><span class="status-stamp neutral">${esc(r.status)}</span></td><td>${esc(r.source||'--')}</td><td>${c.cards_discovered??'--'}</td><td>${c.cloud_scored??'--'}</td><td>${c.source_requests_total??'--'}</td><td>${c.cache_hits??'--'}</td><td>${c.cloud_requests??'--'}</td><td>${esc(r.provider||'--')} / ${esc(r.model||'--')}</td><td>${esc(fmtDateTime(r.imported_at))}</td></tr>`;}).join('')}</tbody></table>`;
+}
+
+
+function renderHunt(data, events){
+  const labels={profile:'PROFILE',source_discovery:'SOURCE DISCOVERY',detail_extraction:'DETAIL EXTRACTION',normalization:'NORMALIZATION',deterministic_filter:'DETERMINISTIC FILTER',cloud_scoring:'CLOUD SCORING',publication:'TTEA PUBLICATION',completion:'COMPLETE'};
+  const terminal=data.status!=='running';
+  byId('huntStatus').textContent=(data.status||'idle').toUpperCase();
+  byId('huntStatus').className=`hunt-status ${['running','completed','partial','failed','interrupted'].includes(data.status)?data.status:'idle'}`;
+  byId('huntMessage').textContent=data.message||data.current_action||'WAITING FOR LOCAL OBSERVATION';
+  byId('huntRunMeta').textContent=data.run_id?`${data.run_id} / ${(data.source_name||'').toUpperCase()} / STARTED ${fmtDateTime(data.started_at)} / ${elapsed(data.started_at,data.finished_at)}`:'SET TTEA_JOB_LIVE_ROOT OR TTEA_REPO ON THE TTEA SERVER';
+  const counts=data.counters||{};
+  const metrics=[['DISCOVERED','cards_discovered'],['EXTRACTED','jobs_extracted'],['RETAINED','deterministic_relevant'],['SCORED','cloud_scored'],['PUBLISHED','published_jobs']];
+  byId('huntCounters').innerHTML=metrics.map(([label,key])=>`<div><span>${label}</span><strong>${counts[key]??'--'}</strong></div>`).join('');
+  byId('huntChecklist').innerHTML=Object.entries(labels).map(([key,label],index)=>{const row=data.stages?.[key]||{};const status=['pending','running','complete','skipped','failed'].includes(row.status)?row.status:'pending';const mark={pending:'.',running:'>',complete:'✓',skipped:'-',failed:'!'}[status];return `<div class="hunt-stage ${status}"><span class="hunt-stage-mark">${mark}</span><div><strong>${label}</strong><small>${esc(row.message||status.toUpperCase())}</small></div><span class="hunt-stage-count">${row.current??''}${row.total!=null?'/'+row.total:''}</span></div>`;}).join('');
+  const observation=data.observer||{};
+  byId('huntObserverLabel').textContent=observation.revision?(terminal?'LAST OBSERVED PAGE':'CURRENT OBSERVATION'):'WAITING';
+  byId('huntObservedUrl').textContent=observation.source_url||'NO PAGE RECEIVED';
+  byId('huntObserverMeta').textContent=`${(observation.page_type||'--').toUpperCase()} / HTTP ${observation.http_status??'--'} / ${observation.cached?'PARSED CACHE / NO NEW REQUEST':'CAPTURED RESPONSE'} / ${observation.page_title||'--'} / ${(data.current_action||'STANDBY').toUpperCase()}`;
+  const frame=byId('huntObserverFrame');
+  if(observation.revision&&data.run_id&&['listing','detail'].includes(observation.page_type)){
+    const key=`${data.run_id}/${observation.revision}`;
+    if(key!==state.huntObserverKey){state.huntObserverKey=key;frame.src='/api/ttea/live/observer?'+new URLSearchParams({run_id:data.run_id,page:observation.page_type,v:observation.revision});}
+    frame.hidden=false;byId('huntObserverEmpty').hidden=true;
+  }else{frame.hidden=true;frame.removeAttribute('src');state.huntObserverKey='';byId('huntObserverEmpty').hidden=false;}
+  const item=data.current_item||{};
+  byId('huntItemAction').textContent=(item.index!=null?`${item.index}/${item.total??'--'} / `:'')+(item.action||'STANDBY').toUpperCase();
+  byId('huntItem').innerHTML=`<h3>${esc(item.title||'WAITING FOR CURRENT ITEM')}</h3><p>${esc(item.company||'--')}</p><small>${esc(item.job_id||'')}</small><p class="hunt-item-url">${esc(item.source_url||'')}</p>`;
+  byId('huntDecision').textContent=(item.result||'--').toUpperCase();
+  byId('huntEvidence').innerHTML=`<div class="hunt-evidence-row"><span>LOCATION</span><strong>${esc(item.location||'--')}</strong></div><div class="hunt-evidence-row"><span>EXPERIENCE</span><strong>${esc(item.experience||'--')}</strong></div><div class="hunt-evidence-row"><span>MATCH SCORE</span><strong>${item.score??'--'}</strong></div>${(item.reasons||[]).map(reason=>`<p class="hunt-reason">${esc(reason)}</p>`).join('')}`;
+  const feed=byId('huntFeed'),oldScroll=feed.scrollTop;
+  feed.innerHTML=(events.items||[]).map(e=>`<div><time>${esc((e.timestamp||'').slice(11,19))}</time><strong>${esc((e.stage||'').replaceAll('_',' ').toUpperCase())}</strong><span>${esc(e.message||'')}</span></div>`).join('')||'NO EVENTS RECEIVED';
+  feed.scrollTop=byId('huntAutoscroll').checked?feed.scrollHeight:oldScroll;
+  const summary=byId('huntSummary');summary.hidden=!data.run_id||!terminal;
+  summary.innerHTML=`<strong>FINAL REGISTER / ${(data.status||'idle').toUpperCase()}</strong><div>${metrics.map(([label,key])=>`<span>${label} <b>${counts[key]??'--'}</b></span>`).join('')}${data.publication?.new_jobs!=null?`<span>NEW JOBS <b>${data.publication.new_jobs}</b></span>`:''}${data.publication?.existing_jobs!=null?`<span>EXISTING JOBS <b>${data.publication.existing_jobs}</b></span>`:''}</div>`;
+}
+async function loadHunt(){
+  clearTimeout(state.huntTimer);
+  if(state.huntBusy)return;
+  state.huntBusy=true;
+  let delay=4000;
+  try{
+    const data=await api('/api/ttea/live');
+    const events=data.run_id?await api('/api/ttea/live/events?'+new URLSearchParams({run_id:data.run_id,limit:100})):{items:[]};
+    if(state.view!=='hunt')return;
+    renderHunt(data,events);
+    delay=data.status==='running'?850:4000;
+  }catch(error){if(state.view==='hunt')byId('huntMessage').textContent='LIVE CHANNEL TEMPORARILY UNAVAILABLE';}
+  finally{state.huntBusy=false;if(state.view==='hunt')state.huntTimer=setTimeout(loadHunt,delay);}
 }
 
 function renderCanonicalAssessment(a){
