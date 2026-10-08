@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>TTEA Application Assistant</title>
+  <link rel="stylesheet" href="sidepanel.css">
+  <script src="sidepanel.js" defer></script>
+</head>
+<body>
+  <header><strong>TTEA</strong><span>APPLICATION ASSISTANT</span></header>
+  <main>
+    <p id="session-indicator" class="muted">SESSION CONNECTING</p>
+    <nav class="mode-selector" aria-label="Assistant mode">
+      <button id="mode-review" aria-pressed="true">REVIEW</button>
+      <button id="mode-followup" aria-pressed="false">FOLLOW-UP</button>
+    </nav>
+    <div class="toolbar"><span id="position" aria-live="polite">— / —</span><button id="refresh">REFRESH QUEUE</button></div>
+    <p id="connection" role="status">CONNECTING TO TTEA</p>
+    <section id="queue-state" aria-live="polite">
+      <h2 id="state-title">LOADING QUEUE</h2>
+      <p id="state-detail">Fetching your review queue…</p>
+      <button id="retry" hidden>RETRY</button>
+    </section>
+    <p id="error" role="alert" hidden></p>
+    <article id="card" hidden>
+      <h1 id="title"></h1>
+      <p id="company"></p><p id="location" class="muted"></p>
+      <div class="metrics"><strong id="score"></strong><span id="verdict"></span></div>
+      <p id="source" class="muted"></p><p id="posted" class="muted"></p>
+      <ul id="matches"></ul>
+      <section id="followup-details" hidden>
+        <h2>CURRENT STATUS</h2><p id="current-status"></p>
+        <p id="submitted" class="muted"></p>
+      </section>
+      <nav aria-label="Queue navigation"><button id="previous">PREVIOUS</button><button id="next">NEXT</button></nav>
+      <button id="open" class="primary">OPEN JOB</button>
+      <section class="application-link" aria-labelledby="link-heading">
+        <h2 id="link-heading">APPLICATION LINK</h2>
+        <p id="application-link-value" aria-live="polite">Not saved</p>
+        <button id="save-link">SAVE CURRENT PAGE</button>
+      </section>
+      <div id="review-actions" class="actions" aria-label="Job status actions">
+        <button data-action="applied" class="positive">APPLIED</button>
+        <button data-action="already_applied">ALREADY APPLIED</button>
+        <button data-action="dismissed">NOT MATCHING</button>
+        <button data-action="not_eligible">NOT ELIGIBLE (MANUAL)</button>
+        <button data-action="shortlisted">SAVE FOR LATER</button>
+        <button data-action="expired">JOB EXPIRED</button>
+        <button data-action="not_interested">NOT INTERESTED</button>
+      </div>
+      <div id="followup-actions" class="actions" aria-label="Follow-up status actions" hidden></div>
+    </article>
+  </main>
+</body>
+</html>
