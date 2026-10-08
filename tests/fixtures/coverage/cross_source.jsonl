@@ -1,0 +1,2 @@
+{"format":"coverage-fixture-v1","source":{"source_id":"fixture_other","source_name":"Fixture Other"},"page_size":2}
+{"key":"other-100","external_id":"other-100","source_url":"https://other.invalid/job/100","values":{"title":"Software Engineer","company":"Example Engineering","location":"Tunis","country":"Tunisia","work_mode":"hybrid","description":"Build reliable Python data services and validate SQLite imports.","canonical_url":"https://employer.invalid/vacancies/req-100","ats_namespace":"employer.invalid:example","ats_requisition_id":"req-100","posted_at":"2026-10-01"}}
