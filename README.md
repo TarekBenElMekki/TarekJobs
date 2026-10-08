@@ -1,5 +1,32 @@
 # TTEA
 
+T/TEA provides a local job dashboard, manual Application Assistant, immutable
+canonical batch evidence, coverage tracking, and read-only HUNT observation.
+
+The current active job pool is admitted exclusively by persisted new-AI KEEP
+decisions. ELIMINATE records remain accessible through application history;
+a missing decision table never enables an unrestricted active pool.
+
+See [the current repository guide](docs/REPOSITORY_GUIDE.md) for architecture,
+explicit migration dependencies, offline verification, and local-only artifacts.
+The [Application Assistant extension](extensions/ttea_application_assistant/README.md)
+uses the loopback API. Analytics migration 003 is activated separately and is
+never applied automatically at startup.
+
+Use the project virtual environment for dependencies and tests:
+
+```powershell
+.\.venv\Scripts\python.exe -m pytest tests -q
+```
+
+Tests use scratch databases and fixture/mock acquisition. Do not use legacy
+collector, migration/rescore, or browser-capture commands as release verification.
+
+## Historical release notes
+
+The version-specific notes below describe earlier releases. The current repository
+guide and committed source supersede their workflow and schema descriptions.
+
 Personal job-market aggregation and matching prototype.
 
 ## V0.1 scope

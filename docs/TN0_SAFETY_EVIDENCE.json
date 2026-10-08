@@ -1,0 +1,243 @@
+{
+  "repository": "C:\\Users\\tarek\\Projects\\TarekJobs",
+  "git_status_before": " M requirements.txt\n M src/ui_server.py\n M tests/test_ui.py\n M ui/app.js\n M ui/index.html\n M ui/styles.css\n?? extensions/\n?? logs/application_analytics.log\n?? logs/production_write_guard.log\n?? migrations/\n?? src/application_analytics.py\n?? src/application_assistant.py\n?? src/production_write_guard.py\n?? src/ttea_batch_import.py\n?? src/ttea_live.py\n?? tests/test_application_assistant.py\n?? tests/test_application_assistant_api.py\n?? tests/test_ttea_batch_import.py\n",
+  "git_status_after": " M requirements.txt\n M src/ui_server.py\n M tests/test_ui.py\n M ui/app.js\n M ui/index.html\n M ui/styles.css\n?? docs/\n?? extensions/\n?? logs/application_analytics.log\n?? logs/production_write_guard.log\n?? migrations/\n?? src/application_analytics.py\n?? src/application_assistant.py\n?? src/coverage/\n?? src/production_write_guard.py\n?? src/ttea_batch_import.py\n?? src/ttea_live.py\n?? tests/fixtures/\n?? tests/test_application_assistant.py\n?? tests/test_application_assistant_api.py\n?? tests/test_coverage_core.py\n?? tests/test_ttea_batch_import.py\n",
+  "ttea_git_status_after": " M .gitignore\n M README.md\n M examples/jobs/tarek_profile.json\n M src/ttea/jobs/hunting/bridge_server.py\n M src/ttea/jobs/hunting/identity.py\n M src/ttea/jobs/hunting/slots.py\n M src/ttea/jobs/intelligence/company_resolution.py\n M src/ttea/jobs/intelligence/repository.py\n M src/ttea/jobs/intelligence/resolution.py\n M src/ttea/jobs/intelligence/site_fetch.py\n M src/ttea/jobs/poc.py\n M src/ttea/jobs/sources/keejob.py\n M tests/test_jobs_company_resolution.py\n M tests/test_jobs_hunting_host_access.py\n M tests/test_jobs_hunting_identity.py\n M tests/test_jobs_hunting_sidebar.py\n M tests/test_jobs_hunting_slots.py\n M tests/test_jobs_intelligence.py\n M tests/test_jobs_resolution.py\n M tools/hunting_chrome_extension/background.js\n M tools/hunting_chrome_extension/manifest.json\n M tools/hunting_chrome_extension/sidepanel.html\n M tools/hunting_chrome_extension/sidepanel.js\n?? QWEN_RUNTIME_PREFLIGHT.md\n?? data/qwen_preflight/\n?? docs/ACADEMIC_POSITIONS_BATCH_001.md\n?? docs/ACADEMIC_POSITIONS_BATCH_001_COMPLETION.md\n?? docs/ACADEMIC_POSITIONS_BATCH_001_DETAILS.md\n?? docs/ACADEMIC_POSITIONS_EXTRACTION_HARDENING.md\n?? docs/ACADEMIC_POSITIONS_TAREKJOBS_IMPORT_PROPOSAL.md\n?? docs/ACADEMIC_POSITIONS_V2313_CANDIDATE_REPORT.md\n?? docs/ACADEMIC_POSITIONS_V2313_CERTIFICATION.md\n?? docs/V1_ARCHITECTURE_AND_EXECUTION_GAPS.md\n?? m16_remaining95.csv\n?? m16_remaining95.json\n?? m16_remaining95.md\n?? src/ttea/jobs/hunting/academic_positions_acquisition.py\n?? src/ttea/jobs/hunting/academic_positions_audit.py\n?? src/ttea/jobs/hunting/academic_positions_batch.py\n?? src/ttea/jobs/hunting/academic_positions_detail_extraction.py\n?? src/ttea/jobs/hunting/academic_positions_details.py\n?? src/ttea/jobs/hunting/academic_positions_reprocess.py\n?? src/ttea/jobs/hunting/academic_positions_scoring.py\n?? src/ttea/jobs/hunting/detail_batch.py\n?? src/ttea/jobs/hunting/detail_store.py\n?? src/ttea/jobs/intelligence/career_crawl.py\n?? src/ttea/jobs/intelligence/career_discovery.py\n?? src/ttea/jobs/intelligence/career_hunt.py\n?? src/ttea/jobs/intelligence/company_search.py\n?? src/ttea/jobs/intelligence/page_role.py\n?? src/ttea/jobs/intelligence/provider_family_poc.py\n?? src/ttea/jobs/keejob_batches.py\n?? src/ttea/jobs/providers/cloudflare.py\n?? src/ttea/jobs/semantic_batch.py\n?? src/ttea/preflight/\n?? tests/fixtures/\n?? tests/hunting_academic_positions_browser.cjs\n?? tests/hunting_academic_positions_details.cjs\n?? tests/test_jobs_career_crawl.py\n?? tests/test_jobs_career_discovery.py\n?? tests/test_jobs_career_hunt.py\n?? tests/test_jobs_cloudflare_provider.py\n?? tests/test_jobs_company_search.py\n?? tests/test_jobs_hunting_academic_positions_acquisition.py\n?? tests/test_jobs_hunting_academic_positions_batch.py\n?? tests/test_jobs_hunting_academic_positions_completion.py\n?? tests/test_jobs_hunting_academic_positions_details.py\n?? tests/test_jobs_hunting_academic_positions_extraction.py\n?? tests/test_jobs_hunting_academic_positions_scoring_v2.py\n?? tests/test_jobs_hunting_academic_positions_scoring_v2313.py\n?? tests/test_jobs_hunting_detail_batch.py\n?? tests/test_jobs_hunting_detail_store.py\n?? tests/test_jobs_keejob_batches.py\n?? tests/test_jobs_page_role.py\n?? tests/test_jobs_provider_family_poc.py\n?? tests/test_jobs_semantic_batch.py\n?? tests/test_qwen_preflight.py\n?? tools/hunting_chrome_extension/academic_positions_details.js\n?? tools/hunting_chrome_extension/academic_positions_details_panel.js\n",
+  "hashes": [
+    {
+      "path": "C:\\Users\\tarek\\Projects\\TarekJobs\\data\\jobs.db",
+      "before": "407864E84CD88FB16E9771F85084F3F40EE0AD49C2FC73172836048599B32AE9",
+      "after": "407864E84CD88FB16E9771F85084F3F40EE0AD49C2FC73172836048599B32AE9",
+      "byte_identical": true
+    },
+    {
+      "path": "C:\\TTEA\\repo\\src\\ttea\\jobs\\hunting\\academic_positions_scoring.py",
+      "before": "CA40C70D4BBDDD6CCDF0645BF6298706F2D962F61E3E2E5D74EDF75EE9069FD9",
+      "after": "CA40C70D4BBDDD6CCDF0645BF6298706F2D962F61E3E2E5D74EDF75EE9069FD9",
+      "byte_identical": true
+    },
+    {
+      "path": "C:\\TTEA\\repo\\examples\\jobs\\tarek_profile.json",
+      "before": "DB3CAC20ED366F8B09E19C4D17B86950FC640FBE3954BEC855DCA6F357C05706",
+      "after": "DB3CAC20ED366F8B09E19C4D17B86950FC640FBE3954BEC855DCA6F357C05706",
+      "byte_identical": true
+    },
+    {
+      "path": "C:\\Users\\tarek\\Projects\\TarekJobs\\src\\production_write_guard.py",
+      "before": "CD20BCB01E71910A4F10340AC546A1F6A685FB94E0DFD43561BB9A8316892BE7",
+      "after": "CD20BCB01E71910A4F10340AC546A1F6A685FB94E0DFD43561BB9A8316892BE7",
+      "byte_identical": true
+    },
+    {
+      "path": "C:\\Users\\tarek\\Projects\\TarekJobs\\src\\ui_server.py",
+      "before": "6D8D0AEB34254EE5A3935BCD17D59AEFBADC50EBCE1E7E4508C02E62AE65E085",
+      "after": "6D8D0AEB34254EE5A3935BCD17D59AEFBADC50EBCE1E7E4508C02E62AE65E085",
+      "byte_identical": true
+    },
+    {
+      "path": "C:\\Users\\tarek\\Projects\\TarekJobs\\extensions\\tarekjobs_application_assistant\\README.md",
+      "before": "8E8F76AC4E7961CCFDE053AF087BFDE2D653ED3C1A12F49F74EDED31078EB743",
+      "after": "8E8F76AC4E7961CCFDE053AF087BFDE2D653ED3C1A12F49F74EDED31078EB743",
+      "byte_identical": true
+    }
+  ],
+  "migration_schema": [
+    {
+      "type": "index",
+      "name": "ix_coverage_errors_run",
+      "tbl_name": "coverage_errors",
+      "sql": "CREATE INDEX ix_coverage_errors_run ON coverage_errors(run_id,resolved_at)"
+    },
+    {
+      "type": "index",
+      "name": "ix_coverage_events_run",
+      "tbl_name": "coverage_events",
+      "sql": "CREATE INDEX ix_coverage_events_run ON coverage_events(run_id,event_id)"
+    },
+    {
+      "type": "index",
+      "name": "ix_coverage_inventory_pending",
+      "tbl_name": "coverage_inventory",
+      "sql": "CREATE INDEX ix_coverage_inventory_pending ON coverage_inventory(run_id,detail_status,dedupe_status,inventory_id)"
+    },
+    {
+      "type": "index",
+      "name": "ix_coverage_provenance_ats",
+      "tbl_name": "coverage_provenance",
+      "sql": "CREATE INDEX ix_coverage_provenance_ats ON coverage_provenance(ats_namespace,ats_requisition_id)"
+    },
+    {
+      "type": "index",
+      "name": "ix_coverage_provenance_external",
+      "tbl_name": "coverage_provenance",
+      "sql": "CREATE INDEX ix_coverage_provenance_external ON coverage_provenance(source_id,external_id)"
+    },
+    {
+      "type": "index",
+      "name": "ix_coverage_provenance_job",
+      "tbl_name": "coverage_provenance",
+      "sql": "CREATE INDEX ix_coverage_provenance_job ON coverage_provenance(canonical_job_id)"
+    },
+    {
+      "type": "index",
+      "name": "ix_coverage_provenance_url",
+      "tbl_name": "coverage_provenance",
+      "sql": "CREATE INDEX ix_coverage_provenance_url ON coverage_provenance(canonical_url)"
+    },
+    {
+      "type": "index",
+      "name": "ix_coverage_runs_source",
+      "tbl_name": "coverage_runs",
+      "sql": "CREATE INDEX ix_coverage_runs_source ON coverage_runs(source_id,started_at)"
+    },
+    {
+      "type": "index",
+      "name": "sqlite_autoindex_coverage_checkpoints_1",
+      "tbl_name": "coverage_checkpoints",
+      "sql": null
+    },
+    {
+      "type": "index",
+      "name": "sqlite_autoindex_coverage_dedupe_candidates_1",
+      "tbl_name": "coverage_dedupe_candidates",
+      "sql": null
+    },
+    {
+      "type": "index",
+      "name": "sqlite_autoindex_coverage_inventory_1",
+      "tbl_name": "coverage_inventory",
+      "sql": null
+    },
+    {
+      "type": "index",
+      "name": "sqlite_autoindex_coverage_inventory_pages_1",
+      "tbl_name": "coverage_inventory_pages",
+      "sql": null
+    },
+    {
+      "type": "index",
+      "name": "sqlite_autoindex_coverage_inventory_pages_2",
+      "tbl_name": "coverage_inventory_pages",
+      "sql": null
+    },
+    {
+      "type": "index",
+      "name": "sqlite_autoindex_coverage_provenance_1",
+      "tbl_name": "coverage_provenance",
+      "sql": null
+    },
+    {
+      "type": "index",
+      "name": "sqlite_autoindex_coverage_receipts_1",
+      "tbl_name": "coverage_receipts",
+      "sql": null
+    },
+    {
+      "type": "index",
+      "name": "sqlite_autoindex_coverage_runs_1",
+      "tbl_name": "coverage_runs",
+      "sql": null
+    },
+    {
+      "type": "index",
+      "name": "sqlite_autoindex_coverage_scopes_1",
+      "tbl_name": "coverage_scopes",
+      "sql": null
+    },
+    {
+      "type": "index",
+      "name": "sqlite_autoindex_coverage_scopes_2",
+      "tbl_name": "coverage_scopes",
+      "sql": null
+    },
+    {
+      "type": "index",
+      "name": "sqlite_autoindex_coverage_sources_1",
+      "tbl_name": "coverage_sources",
+      "sql": null
+    },
+    {
+      "type": "table",
+      "name": "coverage_checkpoints",
+      "tbl_name": "coverage_checkpoints",
+      "sql": "CREATE TABLE coverage_checkpoints (\n run_id TEXT NOT NULL REFERENCES coverage_runs(run_id),\n partition_key TEXT NOT NULL,\n coverage_id TEXT NOT NULL REFERENCES coverage_scopes(coverage_id),\n partition_metadata_json TEXT NOT NULL CHECK(json_valid(partition_metadata_json)),\n cursor_json TEXT CHECK(cursor_json IS NULL OR json_valid(cursor_json)),\n pages_processed INTEGER NOT NULL DEFAULT 0 CHECK(pages_processed >= 0),\n pages_expected INTEGER CHECK(pages_expected >= 0),\n adapter_version TEXT NOT NULL, updated_at TEXT NOT NULL,\n completed INTEGER NOT NULL DEFAULT 0 CHECK(completed IN (0,1)),\n terminal_json TEXT CHECK(terminal_json IS NULL OR json_valid(terminal_json)),\n PRIMARY KEY(run_id,partition_key),\n CHECK((completed=1) = (terminal_json IS NOT NULL))\n)"
+    },
+    {
+      "type": "table",
+      "name": "coverage_dedupe_candidates",
+      "tbl_name": "coverage_dedupe_candidates",
+      "sql": "CREATE TABLE coverage_dedupe_candidates (\n inventory_id INTEGER NOT NULL REFERENCES coverage_inventory(inventory_id),\n canonical_job_id INTEGER NOT NULL REFERENCES jobs(id),\n confidence REAL NOT NULL CHECK(confidence BETWEEN 0 AND 1),\n method TEXT NOT NULL, evidence_json TEXT NOT NULL CHECK(json_valid(evidence_json)),\n created_at TEXT NOT NULL,\n PRIMARY KEY(inventory_id,canonical_job_id)\n)"
+    },
+    {
+      "type": "table",
+      "name": "coverage_errors",
+      "tbl_name": "coverage_errors",
+      "sql": "CREATE TABLE coverage_errors (\n error_id INTEGER PRIMARY KEY, run_id TEXT NOT NULL REFERENCES coverage_runs(run_id),\n stage TEXT NOT NULL, item_key TEXT NOT NULL, code TEXT NOT NULL,\n occurred_at TEXT NOT NULL, resolved_at TEXT\n)"
+    },
+    {
+      "type": "table",
+      "name": "coverage_events",
+      "tbl_name": "coverage_events",
+      "sql": "CREATE TABLE coverage_events (\n event_id INTEGER PRIMARY KEY, run_id TEXT REFERENCES coverage_runs(run_id),\n event_type TEXT NOT NULL, occurred_at TEXT NOT NULL\n)"
+    },
+    {
+      "type": "table",
+      "name": "coverage_inventory",
+      "tbl_name": "coverage_inventory",
+      "sql": "CREATE TABLE coverage_inventory (\n inventory_id INTEGER PRIMARY KEY,\n run_id TEXT NOT NULL REFERENCES coverage_runs(run_id),\n source_id TEXT NOT NULL REFERENCES coverage_sources(source_id),\n source_record_key TEXT NOT NULL, external_id TEXT, source_url TEXT NOT NULL, canonical_url TEXT,\n discovered_at TEXT NOT NULL,\n detail_status TEXT NOT NULL DEFAULT 'pending' CHECK(detail_status IN ('pending','ready','failed')),\n detail_attempts INTEGER NOT NULL DEFAULT 0 CHECK(detail_attempts>=0),\n raw_artifact_path TEXT NOT NULL, raw_artifact_sha256 TEXT NOT NULL,\n detail_artifact_path TEXT, detail_artifact_sha256 TEXT,\n canonical_job_id INTEGER REFERENCES jobs(id),\n dedupe_status TEXT NOT NULL DEFAULT 'pending' CHECK(dedupe_status IN ('pending','create','reuse','review')),\n normalized_json TEXT CHECK(normalized_json IS NULL OR json_valid(normalized_json)),\n error_json TEXT NOT NULL DEFAULT '{}' CHECK(json_valid(error_json)),\n UNIQUE(run_id,source_record_key),\n CHECK((detail_artifact_path IS NULL) = (detail_artifact_sha256 IS NULL)),\n CHECK((dedupe_status IN ('create','reuse')) = (canonical_job_id IS NOT NULL))\n)"
+    },
+    {
+      "type": "table",
+      "name": "coverage_inventory_pages",
+      "tbl_name": "coverage_inventory_pages",
+      "sql": "CREATE TABLE coverage_inventory_pages (\n run_id TEXT NOT NULL, partition_key TEXT NOT NULL, page_number INTEGER NOT NULL CHECK(page_number>0),\n cursor_json TEXT NOT NULL CHECK(json_valid(cursor_json)),\n raw_records_seen INTEGER NOT NULL CHECK(raw_records_seen >= 0),\n artifact_path TEXT NOT NULL, artifact_sha256 TEXT NOT NULL,\n PRIMARY KEY(run_id,partition_key,page_number),\n UNIQUE(run_id,partition_key,cursor_json),\n FOREIGN KEY(run_id,partition_key) REFERENCES coverage_checkpoints(run_id,partition_key)\n)"
+    },
+    {
+      "type": "table",
+      "name": "coverage_provenance",
+      "tbl_name": "coverage_provenance",
+      "sql": "CREATE TABLE coverage_provenance (\n provenance_id INTEGER PRIMARY KEY,\n canonical_job_id INTEGER NOT NULL REFERENCES jobs(id),\n source_id TEXT NOT NULL REFERENCES coverage_sources(source_id), source_record_key TEXT NOT NULL,\n external_id TEXT, source_url TEXT NOT NULL, canonical_url TEXT,\n ats_namespace TEXT, ats_requisition_id TEXT, posted_date TEXT,\n first_seen TEXT NOT NULL, last_seen TEXT NOT NULL,\n duplicate_confidence REAL NOT NULL CHECK(duplicate_confidence BETWEEN 0 AND 1),\n dedupe_method TEXT NOT NULL, evidence_json TEXT NOT NULL CHECK(json_valid(evidence_json)),\n raw_artifact_path TEXT NOT NULL, raw_artifact_sha256 TEXT NOT NULL,\n detail_artifact_path TEXT, detail_artifact_sha256 TEXT,\n UNIQUE(source_id,source_record_key)\n)"
+    },
+    {
+      "type": "table",
+      "name": "coverage_receipts",
+      "tbl_name": "coverage_receipts",
+      "sql": "CREATE TABLE coverage_receipts (\n receipt_id INTEGER PRIMARY KEY, run_id TEXT NOT NULL REFERENCES coverage_runs(run_id),\n kind TEXT NOT NULL CHECK(kind IN ('import','run')), terminal_state TEXT NOT NULL,\n path TEXT NOT NULL, sha256 TEXT NOT NULL, created_at TEXT NOT NULL,\n UNIQUE(run_id,kind,sha256)\n)"
+    },
+    {
+      "type": "table",
+      "name": "coverage_runs",
+      "tbl_name": "coverage_runs",
+      "sql": "CREATE TABLE coverage_runs (\n run_id TEXT PRIMARY KEY, source_id TEXT NOT NULL REFERENCES coverage_sources(source_id),\n scope_json TEXT NOT NULL CHECK(json_valid(scope_json)),\n adapter_version TEXT NOT NULL, adapter_metadata_json TEXT NOT NULL CHECK(json_valid(adapter_metadata_json)),\n scan_kind TEXT NOT NULL CHECK(scan_kind IN ('full','delta')), artifact_root TEXT NOT NULL,\n status TEXT NOT NULL CHECK(status IN ('planned','running','completed','partial','failed','exhausted','blocked','manual_only','unavailable')),\n started_at TEXT NOT NULL, completed_at TEXT,\n pages_expected INTEGER CHECK(pages_expected >= 0),\n pages_processed INTEGER NOT NULL DEFAULT 0 CHECK(pages_processed >= 0),\n last_cursor TEXT CHECK(last_cursor IS NULL OR json_valid(last_cursor)),\n raw_records_seen INTEGER NOT NULL DEFAULT 0 CHECK(raw_records_seen >= 0),\n raw_records_valid INTEGER NOT NULL DEFAULT 0 CHECK(raw_records_valid >= 0),\n canonical_new INTEGER NOT NULL DEFAULT 0 CHECK(canonical_new >= 0),\n canonical_reused INTEGER NOT NULL DEFAULT 0 CHECK(canonical_reused >= 0),\n duplicates INTEGER NOT NULL DEFAULT 0 CHECK(duplicates >= 0),\n detail_pages_attempted INTEGER NOT NULL DEFAULT 0 CHECK(detail_pages_attempted >= 0),\n detail_pages_completed INTEGER NOT NULL DEFAULT 0 CHECK(detail_pages_completed >= 0),\n detail_pages_failed INTEGER NOT NULL DEFAULT 0 CHECK(detail_pages_failed >= 0),\n active_jobs INTEGER NOT NULL DEFAULT 0 CHECK(active_jobs >= 0),\n expired_jobs INTEGER NOT NULL DEFAULT 0 CHECK(expired_jobs >= 0),\n exhausted INTEGER NOT NULL DEFAULT 0 CHECK(exhausted IN (0,1)),\n exhaustion_reason TEXT, last_full_scan TEXT, last_delta_scan TEXT,\n errors_json TEXT NOT NULL DEFAULT '[]' CHECK(json_valid(errors_json)),\n receipt_path TEXT, receipt_sha256 TEXT,\n CHECK((status='exhausted') = (exhausted=1)),\n CHECK(exhausted=0 OR (exhaustion_reason IS NOT NULL AND errors_json='[]')),\n CHECK((status IN ('planned','running') AND completed_at IS NULL) OR\n       (status NOT IN ('planned','running') AND completed_at IS NOT NULL)),\n CHECK((receipt_path IS NULL) = (receipt_sha256 IS NULL)),\n CHECK(raw_records_valid <= raw_records_seen),\n CHECK(canonical_new+canonical_reused <= raw_records_valid)\n)"
+    },
+    {
+      "type": "table",
+      "name": "coverage_scopes",
+      "tbl_name": "coverage_scopes",
+      "sql": "CREATE TABLE coverage_scopes (\n coverage_id TEXT PRIMARY KEY, source_id TEXT NOT NULL REFERENCES coverage_sources(source_id),\n scope_country TEXT NOT NULL, scope_work_mode TEXT NOT NULL, scope_region TEXT NOT NULL,\n partition_key TEXT NOT NULL, partition_metadata_json TEXT NOT NULL CHECK(json_valid(partition_metadata_json)),\n status TEXT NOT NULL DEFAULT 'planned'\n CHECK(status IN ('planned','running','completed','partial','failed','exhausted','blocked','manual_only','unavailable')),\n last_full_scan TEXT, last_delta_scan TEXT,\n evidence_json TEXT NOT NULL DEFAULT '{}' CHECK(json_valid(evidence_json)),\n created_at TEXT NOT NULL, updated_at TEXT NOT NULL,\n UNIQUE(source_id,scope_country,scope_work_mode,scope_region,partition_key)\n)"
+    },
+    {
+      "type": "table",
+      "name": "coverage_scoring_outbox",
+      "tbl_name": "coverage_scoring_outbox",
+      "sql": "CREATE TABLE coverage_scoring_outbox (\n canonical_job_id INTEGER PRIMARY KEY REFERENCES jobs(id),\n run_id TEXT NOT NULL REFERENCES coverage_runs(run_id),\n status TEXT NOT NULL DEFAULT 'needs_scoring' CHECK(status IN ('needs_scoring','scored')),\n created_at TEXT NOT NULL\n)"
+    },
+    {
+      "type": "table",
+      "name": "coverage_sources",
+      "tbl_name": "coverage_sources",
+      "sql": "CREATE TABLE coverage_sources (\n source_id TEXT PRIMARY KEY, source_name TEXT NOT NULL, source_type TEXT NOT NULL,\n acquisition_method TEXT NOT NULL, adapter_key TEXT NOT NULL, adapter_version TEXT NOT NULL,\n base_url TEXT, status TEXT NOT NULL DEFAULT 'enabled' CHECK(status IN ('enabled','disabled')),\n capabilities_json TEXT NOT NULL CHECK(json_valid(capabilities_json)),\n limits_json TEXT NOT NULL CHECK(json_valid(limits_json)),\n canonical_hints_json TEXT NOT NULL CHECK(json_valid(canonical_hints_json)),\n created_at TEXT NOT NULL, updated_at TEXT NOT NULL\n)"
+    }
+  ],
+  "production_writes": 0,
+  "real_web_requests": 0,
+  "model_calls": 0,
+  "verification": {
+    "coverage_tests": 25,
+    "coverage_passed": 25,
+    "full_suite_passed": 176,
+    "full_suite_failed": 3,
+    "full_suite_seconds": 24.15,
+    "cli_operations_passed": 12
+  }
+}

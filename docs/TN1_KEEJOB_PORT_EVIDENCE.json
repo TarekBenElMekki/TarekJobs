@@ -1,0 +1,43 @@
+{
+  "origin": "C:\\TTEA\\repo\\src\\ttea\\jobs\\sources\\keejob.py",
+  "origin_sha256": "84859850B95BEFDF69FA6EAED47BEA688200EDF1FFB38DEC6C2FC69B931D0FB1",
+  "session_sha256": "60CB04DA090A383BB0D3A76F979DECABCA8FAE1E9B301E6DDF7DF3873FD7FB29",
+  "historical_status": "exhausted",
+  "historical_totals": {
+    "actionable_jobs": 212,
+    "detail_requests": 507,
+    "listing_requests": 68,
+    "processed_references": 575,
+    "source_requests": 577
+  },
+  "historical_last_batch": {
+    "selected": 75,
+    "completed": 75,
+    "new_processed": 75,
+    "pagination_exhausted": true,
+    "last_listing_page": 66
+  },
+  "fresh_scan_required": true,
+  "runtime_cross_import": false,
+  "tests_run": false,
+  "source_hashes": {
+    "src/ttea/jobs/sources/keejob.py": "84859850B95BEFDF69FA6EAED47BEA688200EDF1FFB38DEC6C2FC69B931D0FB1",
+    "src/ttea/jobs/keejob_batches.py": "C498B94911E908FD282A5A33839907DDA709C79F69BC1330D628FA60EE9A437A",
+    "tests/test_keejob_pagination.py": "F89B9DE9642B70744E3229323F8329DFEB227F33BC214D3287733EC1B409472A",
+    "tests/test_jobs_keejob_batches.py": "F0C9739A3D259F5F05B3F975370778A7E315E2F3A1B03D908D547DCE1425C3B3"
+  },
+  "source_hashes_after": {
+    "src/ttea/jobs/sources/keejob.py": "84859850B95BEFDF69FA6EAED47BEA688200EDF1FFB38DEC6C2FC69B931D0FB1",
+    "src/ttea/jobs/keejob_batches.py": "C498B94911E908FD282A5A33839907DDA709C79F69BC1330D628FA60EE9A437A",
+    "tests/test_keejob_pagination.py": "F89B9DE9642B70744E3229323F8329DFEB227F33BC214D3287733EC1B409472A",
+    "tests/test_jobs_keejob_batches.py": "F0C9739A3D259F5F05B3F975370778A7E315E2F3A1B03D908D547DCE1425C3B3"
+  },
+  "sources_unchanged": true,
+  "session_sha256_after": "60CB04DA090A383BB0D3A76F979DECABCA8FAE1E9B301E6DDF7DF3873FD7FB29",
+  "history_commits": [
+    "3fe294e",
+    "bdedaf6",
+    "8bcb5ea"
+  ],
+  "zero_new_verification_evidence": "User-provided historical handoff; not rerun in TN-1"
+}

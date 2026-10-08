@@ -1,14 +1,20 @@
-﻿============================================================
+T/TEA CONTEXT INDEX
+Current implementation: README.md and docs/REPOSITORY_GUIDE.md.
+The following is the preserved historical source export from 2026-08-24.
+Do not use embedded source copies as current implementation or migration inputs.
+Historical product names and paths below are evidence, not current configuration.
+
+============================================================
 TAREK JOBS — PROJECT CONTEXT EXPORT
 ============================================================
 
 Generated: 2026-08-24 19:56:39
-Root: C:\Users\tarek\Projects\TarekJobs
+Root: C:\Users\tarek\Projects\TTEA
 
 Purpose:
 This file contains the project directory structure and the
 source/configuration/documentation files required to understand
-the current state of the TarekJobs project.
+the current state of the TTEA project.
 
 Excluded:
 - Git internals
@@ -35,11 +41,11 @@ Excluded:
 📄 .gitignore
 📁 assets\
 📁 assets\branding\
-📄 assets\branding\tarekjobs.ico
-📄 assets\branding\tarekjobs-logo.png
-📄 assets\branding\tarekjobs-logo-hd.png
-📄 assets\branding\tarekjobs-logo-master.png
-📄 assets\branding\tarekjobs-v0451.ico
+📄 assets\branding\ttea.ico
+📄 assets\branding\ttea-logo.png
+📄 assets\branding\ttea-logo-hd.png
+📄 assets\branding\ttea-logo-master.png
+📄 assets\branding\ttea-v0451.ico
 📁 config\
 📄 config\profile.json
 📄 config\settings.yaml
@@ -104,7 +110,7 @@ Excluded:
 📄 src\ui_server.py
 📁 src\utils\
 📄 src\utils\__init__.py
-📄 TarekJobs_CONTEXT.txt
+📄 TTEA_CONTEXT.txt
 📁 tests\
 📄 tests\test_matcher.py
 📄 tests\test_normalize.py
@@ -123,10 +129,10 @@ Excluded:
 📄 ui\favicon.ico
 📄 ui\index.html
 📄 ui\styles.css
-📄 ui\tarekjobs-icon-64.png
-📄 ui\tarekjobs-logo.png
-📄 ui\tarekjobs-logo-hd.png
-📄 ui\tarekjobs-v0451.ico
+📄 ui\ttea-icon-64.png
+📄 ui\ttea-logo.png
+📄 ui\ttea-logo-hd.png
+📄 ui\ttea-v0451.ico
 
 ============================================================
 2. PROJECT FILE SUMMARY
@@ -699,13 +705,13 @@ ui\styles.css
 ################################################################
 
 project:
-  name: TarekJobs
+  name: TTEA
   version: 0.5.0
   edition: Global Opportunity Core
 collection:
   max_jobs_per_dry_run: 250
   request_timeout_seconds: 25
-  user_agent: TarekJobs/0.1 (personal job-search research; respectful polling)
+  user_agent: TTEA/0.1 (personal job-search research; respectful polling)
   stale_after_days: 45
   preserve_stale_jobs: true
   recheck_removed_jobs: false
@@ -1054,7 +1060,7 @@ sources:
 ################################################################
 
 [project]
-name = "tarekjobs"
+name = "ttea"
 version = "0.5.0"
 description = "Worldwide jobs and funded-PhD acquisition, matching and tracking system"
 requires-python = ">=3.11"
@@ -1073,7 +1079,7 @@ addopts = "-q"
 # MODIFIED: 08/14/2026 23:28:31
 ################################################################
 
-# TarekJobs
+# TTEA
 
 Personal job-market aggregation and matching prototype.
 
@@ -1221,10 +1227,10 @@ PROJECT = Path(__file__).resolve().parents[1]
 BRAND = PROJECT / "assets" / "branding"
 UI = PROJECT / "ui"
 
-source = BRAND / "tarekjobs-logo-master.png"
-app_logo = BRAND / "tarekjobs-logo.png"
-icon = BRAND / "tarekjobs.ico"
-ui_logo = UI / "tarekjobs-logo.png"
+source = BRAND / "ttea-logo-master.png"
+app_logo = BRAND / "ttea-logo.png"
+icon = BRAND / "ttea.ico"
+ui_logo = UI / "ttea-logo.png"
 ui_icon = UI / "favicon.ico"
 touch = UI / "apple-touch-icon.png"
 
@@ -1297,7 +1303,7 @@ if not desktop.exists():
     desktop = Path.home() / "Desktop"
 
 stamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-OUTPUT = desktop / f"TarekJobs_UI_Audit_{stamp}"
+OUTPUT = desktop / f"TTEA_UI_Audit_{stamp}"
 OUTPUT.mkdir(parents=True, exist_ok=True)
 
 VIEWPORT = {"width": 1600, "height": 1000}
@@ -2175,7 +2181,7 @@ if (-not (Test-Path $PythonExe)) {
 }
 
 Set-Location $ProjectPath
-Write-Host "TarekJobs dashboard: http://127.0.0.1:8765" -ForegroundColor Cyan
+Write-Host "TTEA dashboard: http://127.0.0.1:8765" -ForegroundColor Cyan
 & $PythonExe -m uvicorn src.ui_server:app --host 127.0.0.1 --port 8765
 
 
@@ -3613,13 +3619,13 @@ BRANDING = ROOT / "assets" / "branding"
 UI = ROOT / "ui"
 
 candidates = [
-    BRANDING / "tarekjobs-logo-master.png",
-    BRANDING / "tarekjobs-logo.png",
-    UI / "tarekjobs-logo.png",
+    BRANDING / "ttea-logo-master.png",
+    BRANDING / "ttea-logo.png",
+    UI / "ttea-logo.png",
 ]
 source = next((p for p in candidates if p.exists()), None)
 if source is None:
-    raise SystemExit("No TarekJobs source logo was found.")
+    raise SystemExit("No TTEA source logo was found.")
 
 img = Image.open(source).convert("RGBA")
 bbox = img.getchannel("A").getbbox()
@@ -3638,8 +3644,8 @@ hd = hd.filter(ImageFilter.UnsharpMask(radius=0.7, percent=115, threshold=2))
 
 BRANDING.mkdir(parents=True, exist_ok=True)
 UI.mkdir(parents=True, exist_ok=True)
-hd.save(BRANDING / "tarekjobs-logo-hd.png", optimize=True)
-hd.save(UI / "tarekjobs-logo-hd.png", optimize=True)
+hd.save(BRANDING / "ttea-logo-hd.png", optimize=True)
+hd.save(UI / "ttea-logo-hd.png", optimize=True)
 
 icon256 = canvas.resize((256,256), Image.Resampling.LANCZOS)
 icon256 = ImageEnhance.Contrast(icon256).enhance(1.04)
@@ -3647,10 +3653,10 @@ icon256 = icon256.filter(ImageFilter.UnsharpMask(radius=0.65, percent=150, thres
 
 icon64 = icon256.resize((64,64), Image.Resampling.LANCZOS)
 icon64 = icon64.filter(ImageFilter.UnsharpMask(radius=0.45, percent=165, threshold=1))
-icon64.save(UI / "tarekjobs-icon-64.png", optimize=True)
+icon64.save(UI / "ttea-icon-64.png", optimize=True)
 
-ico_brand = BRANDING / "tarekjobs-v0451.ico"
-ico_ui = UI / "tarekjobs-v0451.ico"
+ico_brand = BRANDING / "ttea-v0451.ico"
+ico_ui = UI / "ttea-v0451.ico"
 icon256.save(
     ico_brand,
     format="ICO",
@@ -3658,7 +3664,7 @@ icon256.save(
 )
 ico_ui.write_bytes(ico_brand.read_bytes())
 (UI / "favicon.ico").write_bytes(ico_brand.read_bytes())
-(BRANDING / "tarekjobs.ico").write_bytes(ico_brand.read_bytes())
+(BRANDING / "ttea.ico").write_bytes(ico_brand.read_bytes())
 
 print(f"Logo source : {source}")
 print(f"Source size : {Image.open(source).size}")
@@ -3912,19 +3918,19 @@ version = "0451"
 html = re.sub(r'(/assets/styles\.css)(?:\?[^"\']*)?', rf'\1?v={version}', html)
 html = re.sub(r'(/assets/app\.js)(?:\?[^"\']*)?', rf'\1?v={version}', html)
 html = re.sub(
-    r'/assets/tarekjobs-logo(?:-hd)?\.png(?:\?[^"\']*)?',
-    f'/assets/tarekjobs-logo-hd.png?v={version}',
+    r'/assets/ttea-logo(?:-hd)?\.png(?:\?[^"\']*)?',
+    f'/assets/ttea-logo-hd.png?v={version}',
     html
 )
 html = re.sub(
-    r'/assets/(?:favicon|tarekjobs-v\d+)\.ico(?:\?[^"\']*)?',
-    f'/assets/tarekjobs-v0451.ico?v={version}',
+    r'/assets/(?:favicon|ttea-v\d+)\.ico(?:\?[^"\']*)?',
+    f'/assets/ttea-v0451.ico?v={version}',
     html
 )
-if "tarekjobs-icon-64.png" not in html:
+if "ttea-icon-64.png" not in html:
     html = html.replace(
         "</head>",
-        '  <link rel="icon" type="image/png" sizes="64x64" href="/assets/tarekjobs-icon-64.png?v=0451" />\n</head>',
+        '  <link rel="icon" type="image/png" sizes="64x64" href="/assets/ttea-icon-64.png?v=0451" />\n</head>',
         1
     )
 
@@ -4102,7 +4108,7 @@ export_path = ROOT / settings.get("storage", {}).get("export_top_matches_csv", "
 exported = export_top_matches(engine, export_path)
 
 print("========================================================")
-print(" TarekJobs V0.5.0 - Global Core migration complete")
+print(" TTEA V0.5.0 - Global Core migration complete")
 print("========================================================")
 print(f"Database:            {db_path}")
 print(f"Canonical rows:      {changed}")
@@ -4210,7 +4216,7 @@ class BaseCollector(ABC):
         timeout = settings.get("collection", {}).get("request_timeout_seconds", 25)
         ua = settings.get("collection", {}).get(
             "user_agent",
-            "TarekJobs/0.1 (personal job-search research)"
+            "TTEA/0.1 (personal job-search research)"
         )
         self.client = httpx.Client(
             timeout=timeout,
@@ -4352,7 +4358,7 @@ class KeejobCollector(BaseCollector):
                 # Fail closed for the HTML collector if robots could not be read.
                 return False
             self._robots_cache[root] = parser
-        user_agent = self.settings.get("collection", {}).get("user_agent", "TarekJobs")
+        user_agent = self.settings.get("collection", {}).get("user_agent", "TTEA")
         return parser.can_fetch(user_agent, url)
 
     @staticmethod
@@ -5343,7 +5349,7 @@ def dry_run(
     errors: dict[str, str] = {}
     per_source_default = max(1, max_jobs // max(1, len(enabled)))
 
-    console.print(f"\n[bold]TarekJobs dry run[/bold] - max {max_jobs} raw listings")
+    console.print(f"\n[bold]TTEA dry run[/bold] - max {max_jobs} raw listings")
     logging.info("Starting dry run with %s selected/enabled sources", len(enabled))
 
     for source_name, cfg in enabled:
@@ -5419,7 +5425,7 @@ def dry_run(
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="TarekJobs personal job-market collector")
+    parser = argparse.ArgumentParser(description="TTEA personal job-market collector")
     sub = parser.add_subparsers(dest="command")
     dry = sub.add_parser("dry-run", help="Fetch a live batch and run the full pipeline")
     dry.add_argument("--limit", type=int, default=None)
@@ -6784,7 +6790,7 @@ db_path = ROOT / settings.get("storage", {}).get("sqlite_path", "data/jobs.db")
 engine = get_engine(str(db_path))
 init_db(engine)
 
-app = FastAPI(title="TarekJobs Dashboard API", version="0.5.0")
+app = FastAPI(title="TTEA Dashboard API", version="0.5.0")
 app.mount("/assets", StaticFiles(directory=UI_DIR), name="assets")
 
 
@@ -7130,7 +7136,7 @@ def favicon():
 def health():
     return {
         "ok": True,
-        "project": settings.get("project", {}).get("name", "TarekJobs"),
+        "project": settings.get("project", {}).get("name", "TTEA"),
         "version": settings.get("project", {}).get("version", "0.4.0"),
         "database": str(db_path),
     }
@@ -7555,7 +7561,7 @@ def start_run(payload: RunRequest):
         target=_run_collection_worker,
         args=(run_id, payload.limit, payload.ignore_poll_interval, selected_names),
         daemon=True,
-        name=f"tarekjobs-{run_id}",
+        name=f"ttea-{run_id}",
     )
     RUN_THREAD.start()
     return state
@@ -8797,13 +8803,13 @@ bootstrap();
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>TarekJobs / Market Register</title>
-  <!-- TAREKJOBS_OFFICIAL_BRAND_META -->
-  <link rel="icon" type="image/x-icon" href="/assets/tarekjobs-v0451.ico?v=0451" />
-  <link rel="icon" type="image/png" sizes="512x512" href="/assets/tarekjobs-logo-hd.png?v=0451" />
+  <title>TTEA / Market Register</title>
+  <!-- TTEA_OFFICIAL_BRAND_META -->
+  <link rel="icon" type="image/x-icon" href="/assets/ttea-v0451.ico?v=0451" />
+  <link rel="icon" type="image/png" sizes="512x512" href="/assets/ttea-logo-hd.png?v=0451" />
   <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
   <link rel="stylesheet" href="/assets/styles.css?v=0451" />
-  <link rel="icon" type="image/png" sizes="64x64" href="/assets/tarekjobs-icon-64.png?v=0451" />
+  <link rel="icon" type="image/png" sizes="64x64" href="/assets/ttea-icon-64.png?v=0451" />
 </head>
 <body>
   <div class="paper-noise" aria-hidden="true"></div>
@@ -8811,8 +8817,8 @@ bootstrap();
     <aside class="sidebar">
       <div class="brand">
         <div class="brand-kicker">PERSONAL MARKET REGISTER</div>
-        <!-- TAREKJOBS_OFFICIAL_LOGO -->
-        <div class="brand-logo-block"><img class="brand-logo" src="/assets/tarekjobs-logo-hd.png?v=0451" alt="TarekJobs" /></div>
+        <!-- TTEA_OFFICIAL_LOGO -->
+        <div class="brand-logo-block"><img class="brand-logo" src="/assets/ttea-logo-hd.png?v=0451" alt="TTEA" /></div>
         <div class="brand-rule"></div>
         <div class="brand-subtitle">EMPLOYMENT INTELLIGENCE<br>LOCAL TERMINAL</div>
       </div>
@@ -10243,7 +10249,7 @@ button.register-row:hover {
 }
 
 /* ==========================================================
-   TAREKJOBS OFFICIAL BRAND
+   TTEA OFFICIAL BRAND
    The generated mark is the canonical visual identity.
    ========================================================== */
 
@@ -10454,7 +10460,7 @@ button.register-row:hover {
 ============================================================
 
 Root:
-C:\Users\tarek\Projects\TarekJobs
+C:\Users\tarek\Projects\TTEA
 
 Files included:
 68
@@ -10463,7 +10469,7 @@ Generated:
 2026-08-24 19:57:04
 
 Output:
-C:\Users\tarek\Projects\TarekJobs\TarekJobs_CONTEXT.txt
+C:\Users\tarek\Projects\TTEA\TTEA_CONTEXT.txt
 
 ============================================================
 END OF TAREK JOBS CONTEXT

@@ -1,0 +1,405 @@
+{
+  "repository": "C:\\Users\\tarek\\Projects\\TarekJobs",
+  "git_status_before": " M requirements.txt\n M src/ui_server.py\n M tests/test_ui.py\n M ui/app.js\n M ui/index.html\n M ui/styles.css\n?? docs/\n?? extensions/\n?? logs/application_analytics.log\n?? logs/production_write_guard.log\n?? migrations/\n?? src/application_analytics.py\n?? src/application_assistant.py\n?? src/coverage/\n?? src/production_write_guard.py\n?? src/ttea_batch_import.py\n?? src/ttea_live.py\n?? tests/fixtures/\n?? tests/test_application_assistant.py\n?? tests/test_application_assistant_api.py\n?? tests/test_coverage_core.py\n?? tests/test_ttea_batch_import.py\n",
+  "protected_before": {
+    "C:\\Users\\tarek\\Projects\\TarekJobs\\data\\jobs.db": "407864E84CD88FB16E9771F85084F3F40EE0AD49C2FC73172836048599B32AE9",
+    "C:\\Users\\tarek\\Projects\\TarekJobs\\src\\production_write_guard.py": "CD20BCB01E71910A4F10340AC546A1F6A685FB94E0DFD43561BB9A8316892BE7",
+    "C:\\Users\\tarek\\Projects\\TarekJobs\\src\\ui_server.py": "6D8D0AEB34254EE5A3935BCD17D59AEFBADC50EBCE1E7E4508C02E62AE65E085",
+    "C:\\Users\\tarek\\Projects\\TarekJobs\\extensions\\tarekjobs_application_assistant\\README.md": "8E8F76AC4E7961CCFDE053AF087BFDE2D653ED3C1A12F49F74EDED31078EB743",
+    "C:\\TTEA\\repo\\src\\ttea\\jobs\\hunting\\academic_positions_scoring.py": "CA40C70D4BBDDD6CCDF0645BF6298706F2D962F61E3E2E5D74EDF75EE9069FD9",
+    "C:\\TTEA\\repo\\examples\\jobs\\tarek_profile.json": "DB3CAC20ED366F8B09E19C4D17B86950FC640FBE3954BEC855DCA6F357C05706"
+  },
+  "tn0_before": {
+    "src\\coverage\\artifacts.py": "39E3B522F9ABE739B4597CA22106E5C2F4B8A8A0E8579B6AE1F0F12E447D87DD",
+    "src\\coverage\\contracts.py": "A6274CB2C032792AA66850B84DCF0A3F53540E04690D1F109EB6BE2731F5F12F",
+    "src\\coverage\\dedupe.py": "73B99060D300ADCD9001263AFFD150D3C7984BA24C4C3A7C48FD417D609B9952",
+    "src\\coverage\\fixture.py": "E5E1C00294AD17A2245D8FA63DF80AF1A308EFD15B7542780161DC8F5A6F0401",
+    "src\\coverage\\importer.py": "362698FFBA98FDF77C14A0FE8C088319C3AA4F235AA9F37D2F04A01FC48A7451",
+    "src\\coverage\\normalization.py": "15114E42C6912C624AB86201394274978F37C55F9FBA07F42EAAD26C7061BFD4",
+    "src\\coverage\\service.py": "84CF5A0FCF7A9CAE5C8687884BE63A7571F810436A70226E697AE8784AE35568",
+    "src\\coverage\\storage.py": "8122C88A13EAEC3F719F9DFC7EB78EDE83B160FA5962ACA911C6932A04A827F8",
+    "src\\coverage\\__init__.py": "7158715A092338446A10C72A51F72381266B548264CEB5BF0061951DC8BCFAED",
+    "src\\coverage\\__main__.py": "93AC49C167A66FE6904C74B99D1E639CFE25FE76C5FDC96D5184565AD7291F75",
+    "migrations\\001_ttea_canonical_batches.sql": "D16C516895FC16BF247837C98857F4AE333F63CB8F17000E9DBC2B3E4E38F5AD",
+    "migrations\\002_application_assistant_foundation.sql": "2FCBE488DF6E1AFD755F707F2B6197F263F77BBD54CEF66470BA75E13006DB0D",
+    "migrations\\003_application_analytics.sql": "9ABD472A7B82BE1139ABF9ADF1ABC8597605C57708831C908C3F56C3A3DCA510",
+    "migrations\\004_coverage_core.sql": "95998C3438AE152CAB364B5D8652532B3E49F75277183AB8419278185FA1169E"
+  },
+  "tests_run": 0,
+  "production_writes": 0,
+  "production_migrations": 0,
+  "full_live_crawls": 0,
+  "model_calls": 0,
+  "protected_after": {
+    "C:\\Users\\tarek\\Projects\\TarekJobs\\data\\jobs.db": "407864E84CD88FB16E9771F85084F3F40EE0AD49C2FC73172836048599B32AE9",
+    "C:\\Users\\tarek\\Projects\\TarekJobs\\src\\production_write_guard.py": "CD20BCB01E71910A4F10340AC546A1F6A685FB94E0DFD43561BB9A8316892BE7",
+    "C:\\Users\\tarek\\Projects\\TarekJobs\\src\\ui_server.py": "6D8D0AEB34254EE5A3935BCD17D59AEFBADC50EBCE1E7E4508C02E62AE65E085",
+    "C:\\Users\\tarek\\Projects\\TarekJobs\\extensions\\tarekjobs_application_assistant\\README.md": "8E8F76AC4E7961CCFDE053AF087BFDE2D653ED3C1A12F49F74EDED31078EB743",
+    "C:\\TTEA\\repo\\src\\ttea\\jobs\\hunting\\academic_positions_scoring.py": "CA40C70D4BBDDD6CCDF0645BF6298706F2D962F61E3E2E5D74EDF75EE9069FD9",
+    "C:\\TTEA\\repo\\examples\\jobs\\tarek_profile.json": "DB3CAC20ED366F8B09E19C4D17B86950FC640FBE3954BEC855DCA6F357C05706"
+  },
+  "protected_unchanged": true,
+  "tn0_after": {
+    "src\\coverage\\artifacts.py": "39E3B522F9ABE739B4597CA22106E5C2F4B8A8A0E8579B6AE1F0F12E447D87DD",
+    "src\\coverage\\contracts.py": "3F5EB2AF336663B64780337421F33EE32A77118584D77D88CFD7242927FC9941",
+    "src\\coverage\\dedupe.py": "63288E072AB816908DBC86B6E9E5AE140947DA4775CF9EFED0AF4E00D7308BF4",
+    "src\\coverage\\fixture.py": "E5E1C00294AD17A2245D8FA63DF80AF1A308EFD15B7542780161DC8F5A6F0401",
+    "src\\coverage\\importer.py": "31D5DB3DF3E99B4974C1821A75CC6F0EB83383BB7ACA7C5AA129125B6898CE9A",
+    "src\\coverage\\normalization.py": "0F930B2B8B21E1D08666861D7B7711A24AAF1C4FDD7E6C220AD20490D98072EC",
+    "src\\coverage\\service.py": "CE4F201FE3FD69B7E2710A57A006A495BC05344EED37671D66ADF81D9C3D51E3",
+    "src\\coverage\\storage.py": "8122C88A13EAEC3F719F9DFC7EB78EDE83B160FA5962ACA911C6932A04A827F8",
+    "src\\coverage\\__init__.py": "7158715A092338446A10C72A51F72381266B548264CEB5BF0061951DC8BCFAED",
+    "src\\coverage\\__main__.py": "0E811F2932F788175D0A1FFBEA9FDC92991E5DE0A076C64939CFD718EB44D2D3",
+    "migrations\\001_ttea_canonical_batches.sql": "D16C516895FC16BF247837C98857F4AE333F63CB8F17000E9DBC2B3E4E38F5AD",
+    "migrations\\002_application_assistant_foundation.sql": "2FCBE488DF6E1AFD755F707F2B6197F263F77BBD54CEF66470BA75E13006DB0D",
+    "migrations\\003_application_analytics.sql": "9ABD472A7B82BE1139ABF9ADF1ABC8597605C57708831C908C3F56C3A3DCA510",
+    "migrations\\004_coverage_core.sql": "95998C3438AE152CAB364B5D8652532B3E49F75277183AB8419278185FA1169E"
+  },
+  "tn0_modified": [
+    "src\\coverage\\contracts.py",
+    "src\\coverage\\dedupe.py",
+    "src\\coverage\\importer.py",
+    "src\\coverage\\normalization.py",
+    "src\\coverage\\service.py",
+    "src\\coverage\\__main__.py"
+  ],
+  "migration_004_unchanged": true,
+  "git_status_after": " M requirements.txt\n M src/ui_server.py\n M tests/test_ui.py\n M ui/app.js\n M ui/index.html\n M ui/styles.css\n?? docs/\n?? extensions/\n?? logs/application_analytics.log\n?? logs/production_write_guard.log\n?? migrations/\n?? src/application_analytics.py\n?? src/application_assistant.py\n?? src/coverage/\n?? src/production_write_guard.py\n?? src/ttea_batch_import.py\n?? src/ttea_live.py\n?? tests/fixtures/\n?? tests/test_application_assistant.py\n?? tests/test_application_assistant_api.py\n?? tests/test_coverage_core.py\n?? tests/test_coverage_native_cli.py\n?? tests/test_coverage_native_http.py\n?? tests/test_coverage_native_integration.py\n?? tests/test_coverage_native_parsers.py\n?? tests/test_ttea_batch_import.py\n",
+  "files_added": [
+    "docs/TN1_IMPLEMENTATION_REPORT.md",
+    "docs/TN1_KEEJOB_PORT_EVIDENCE.json",
+    "docs/TN1_SAFETY_EVIDENCE.json",
+    "docs/TN1_TUNISIA_NATIVE_ACQUISITION.md",
+    "migrations/005_coverage_record_outcomes.sql",
+    "src/coverage/adapters/__init__.py",
+    "src/coverage/adapters/base.py",
+    "src/coverage/adapters/http.py",
+    "src/coverage/adapters/keejob.py",
+    "src/coverage/adapters/keejob_parsing.py",
+    "src/coverage/adapters/parsing.py",
+    "src/coverage/adapters/registry.py",
+    "src/coverage/adapters/tanitjobs.py",
+    "src/coverage/adapters/tunisietravail.py",
+    "src/coverage/diagnostics.py",
+    "src/coverage/native_cli.py",
+    "src/coverage/record_outcomes.py",
+    "tests/fixtures/tn1/README.md",
+    "tests/fixtures/tn1/keejob_detail.html",
+    "tests/fixtures/tn1/keejob_final.html",
+    "tests/fixtures/tn1/keejob_listing.html",
+    "tests/fixtures/tn1/malformed.html",
+    "tests/fixtures/tn1/tanit_challenge.html",
+    "tests/fixtures/tn1/tanit_detail.html",
+    "tests/fixtures/tn1/tanit_listing.html",
+    "tests/fixtures/tn1/travail_archive.html",
+    "tests/fixtures/tn1/travail_links.html",
+    "tests/fixtures/tn1/travail_multi.html",
+    "tests/fixtures/tn1/travail_single.html",
+    "tests/test_coverage_native_cli.py",
+    "tests/test_coverage_native_http.py",
+    "tests/test_coverage_native_integration.py",
+    "tests/test_coverage_native_parsers.py"
+  ],
+  "files_modified": [
+    "src/coverage/contracts.py",
+    "src/coverage/dedupe.py",
+    "src/coverage/importer.py",
+    "src/coverage/normalization.py",
+    "src/coverage/service.py",
+    "src/coverage/__main__.py"
+  ],
+  "implementation_file_hashes": {
+    "docs/TN1_KEEJOB_PORT_EVIDENCE.json": "B20B2196D1C8606C4CF651439C6B609981B9E4266B44CA28E7B8308A94A4E76D",
+    "docs/TN1_TUNISIA_NATIVE_ACQUISITION.md": "BED8A5CDE508AE840E927B5B78254E245C9CF9B8271BCEC9F53C056F1DF5D212",
+    "migrations/005_coverage_record_outcomes.sql": "6D8B54F55AE9590A42CFD1F34D43E08BDFC55B1D007CA0F7B7AD8752B3CD61DB",
+    "src/coverage/adapters/__init__.py": "147030E221836CF7DB61A523F5530EC8481E22CAC4E20E83195725F871866A43",
+    "src/coverage/adapters/base.py": "1C7874D27EF0940B5C5E663F9D8FC1291E10ABB56E5B9346C5519AD092A270E4",
+    "src/coverage/adapters/http.py": "461731E21E3E5D11B1733797EF5C07F62928E41389D978B0342AE91333AAC20B",
+    "src/coverage/adapters/keejob.py": "67967F43662DA0891CC8E5C3B0C0C42D1F36BF3B6A702D2C31923E11C90C22C7",
+    "src/coverage/adapters/keejob_parsing.py": "6ACF9476975E269B0FCDB9647A1FC4CD56C4C2B96332A760EC0DB3089F4CFEE4",
+    "src/coverage/adapters/parsing.py": "582959D26020E72882644C7B73DFC252799E54ABD712B135C5B43BB8360121C7",
+    "src/coverage/adapters/registry.py": "73A23F1B3DC870E950D9DB5544CD07EB4A68E1B5C55DD3DE39C64FD348B09EE1",
+    "src/coverage/adapters/tanitjobs.py": "C71B5A728FD9CB8E70E4644628C8CF7A8645AA2DDBE9485B09A6B15CD20BB227",
+    "src/coverage/adapters/tunisietravail.py": "F42C7A80241B9BF9AFBC1CD46250AA3B39BB1A0F281C1EF83A88AACCDD418194",
+    "src/coverage/diagnostics.py": "695F9979500E861924551EAB2929163C2B009AF00D4B51A49AA362B846E71F6B",
+    "src/coverage/native_cli.py": "E037FA6BEC5ABE1EE73C04CA77430A4793042974203E7933DF5427488F77DB64",
+    "src/coverage/record_outcomes.py": "6E2C570E77AA683B3494C957BEC171B6C18D2E841E278923472DD63404D736C2",
+    "tests/fixtures/tn1/README.md": "339F8E91C12FC7459AD1C2CB4274039603F0BC337E1617934AD9F5D3C592188F",
+    "tests/fixtures/tn1/keejob_detail.html": "681B273DE8699B7FE2E737D5A44C079D0BD3832C71CAC2E21FAD7F0F930E34A2",
+    "tests/fixtures/tn1/keejob_final.html": "A2336CCB2E2837AF8D3456AD210EDFFF3CA0E12B4932DFD239F7DEFA246BE2BB",
+    "tests/fixtures/tn1/keejob_listing.html": "57471F59DE59EB6F44A8F59DB141194EFAB2C6EC4DCE46906D9C55B3208946A9",
+    "tests/fixtures/tn1/malformed.html": "920A3886B0FFC54CD3331ACD347731D55F3E88A763012F5AC0458CE5408F3A71",
+    "tests/fixtures/tn1/tanit_challenge.html": "AA4802E44FE73252C5A242D94C8C79519AD912A66695981EED7EB673F044BF67",
+    "tests/fixtures/tn1/tanit_detail.html": "08FD47E262D64B00FC44DE799E280C72FF30E4334D220EA2D6FE7966C7F1EFAA",
+    "tests/fixtures/tn1/tanit_listing.html": "FB71801CD5F3414D9AD61DE378EBA410044AF942F3BB9A74A08AFA7BC3C49B52",
+    "tests/fixtures/tn1/travail_archive.html": "78851C5038C53C83A6D6F85516BAB804035896151C92C70CB5D385827BFF35F4",
+    "tests/fixtures/tn1/travail_links.html": "6F85FA272996584E8D34096FF653A6F413D0F6705D01EE1C709651D9594AC3D5",
+    "tests/fixtures/tn1/travail_multi.html": "FF220EDA3154C96DDCC7695D504BF927F3659D64641929EE207E6870083A85DA",
+    "tests/fixtures/tn1/travail_single.html": "82070CBEE0FCCE4E4CE222AC76DC873F3540D2989CD6E48FE8A0D142BABAA8AE",
+    "tests/test_coverage_native_cli.py": "08AC08F5681C05A06221EABDBFB359BE429A66CF650CED927342BC69368692AD",
+    "tests/test_coverage_native_http.py": "CD7921C174DE717CA6B759DA58CD979C6A198491A531B3F64E8FBC724A476A16",
+    "tests/test_coverage_native_integration.py": "A6A7BB8F124191DA3311946763B48ADCFA5344EF5752EB812A44AE9B5C6E3A73",
+    "tests/test_coverage_native_parsers.py": "A38D2A538C53D349ABDD9ECBF5CC28524FCF378DC5E294F2A591B5FBCE545755",
+    "src/coverage/contracts.py": "3F5EB2AF336663B64780337421F33EE32A77118584D77D88CFD7242927FC9941",
+    "src/coverage/dedupe.py": "63288E072AB816908DBC86B6E9E5AE140947DA4775CF9EFED0AF4E00D7308BF4",
+    "src/coverage/importer.py": "31D5DB3DF3E99B4974C1821A75CC6F0EB83383BB7ACA7C5AA129125B6898CE9A",
+    "src/coverage/normalization.py": "0F930B2B8B21E1D08666861D7B7711A24AAF1C4FDD7E6C220AD20490D98072EC",
+    "src/coverage/service.py": "CE4F201FE3FD69B7E2710A57A006A495BC05344EED37671D66ADF81D9C3D51E3",
+    "src/coverage/__main__.py": "0E811F2932F788175D0A1FFBEA9FDC92991E5DE0A076C64939CFD718EB44D2D3"
+  },
+  "verification": "Source/diff/hash inspection only. No test, CLI smoke, import probe, or migration execution.",
+  "diff_inspection": {
+    "method": "git diff --no-index --check against NUL for added/modified implementation and fixtures",
+    "files": [
+      "migrations/005_coverage_record_outcomes.sql",
+      "src/coverage/adapters/__init__.py",
+      "src/coverage/adapters/base.py",
+      "src/coverage/adapters/http.py",
+      "src/coverage/adapters/keejob.py",
+      "src/coverage/adapters/keejob_parsing.py",
+      "src/coverage/adapters/parsing.py",
+      "src/coverage/adapters/registry.py",
+      "src/coverage/adapters/tanitjobs.py",
+      "src/coverage/adapters/tunisietravail.py",
+      "src/coverage/diagnostics.py",
+      "src/coverage/native_cli.py",
+      "src/coverage/record_outcomes.py",
+      "tests/fixtures/tn1/README.md",
+      "tests/fixtures/tn1/keejob_detail.html",
+      "tests/fixtures/tn1/keejob_final.html",
+      "tests/fixtures/tn1/keejob_listing.html",
+      "tests/fixtures/tn1/malformed.html",
+      "tests/fixtures/tn1/tanit_challenge.html",
+      "tests/fixtures/tn1/tanit_detail.html",
+      "tests/fixtures/tn1/tanit_listing.html",
+      "tests/fixtures/tn1/travail_archive.html",
+      "tests/fixtures/tn1/travail_links.html",
+      "tests/fixtures/tn1/travail_multi.html",
+      "tests/fixtures/tn1/travail_single.html",
+      "tests/test_coverage_native_cli.py",
+      "tests/test_coverage_native_http.py",
+      "tests/test_coverage_native_integration.py",
+      "tests/test_coverage_native_parsers.py",
+      "src/coverage/contracts.py",
+      "src/coverage/dedupe.py",
+      "src/coverage/importer.py",
+      "src/coverage/normalization.py",
+      "src/coverage/service.py",
+      "src/coverage/__main__.py"
+    ],
+    "raw_results": [
+      {
+        "file": "migrations/005_coverage_record_outcomes.sql",
+        "returncode": 1,
+        "stdout": "",
+        "stderr": "warning: in the working copy of 'migrations/005_coverage_record_outcomes.sql', LF will be replaced by CRLF the next time Git touches it\n"
+      },
+      {
+        "file": "src/coverage/adapters/__init__.py",
+        "returncode": 1,
+        "stdout": "",
+        "stderr": "warning: in the working copy of 'src/coverage/adapters/__init__.py', LF will be replaced by CRLF the next time Git touches it\n"
+      },
+      {
+        "file": "src/coverage/adapters/base.py",
+        "returncode": 1,
+        "stdout": "",
+        "stderr": "warning: in the working copy of 'src/coverage/adapters/base.py', LF will be replaced by CRLF the next time Git touches it\n"
+      },
+      {
+        "file": "src/coverage/adapters/http.py",
+        "returncode": 1,
+        "stdout": "",
+        "stderr": "warning: in the working copy of 'src/coverage/adapters/http.py', LF will be replaced by CRLF the next time Git touches it\n"
+      },
+      {
+        "file": "src/coverage/adapters/keejob.py",
+        "returncode": 1,
+        "stdout": "",
+        "stderr": "warning: in the working copy of 'src/coverage/adapters/keejob.py', LF will be replaced by CRLF the next time Git touches it\n"
+      },
+      {
+        "file": "src/coverage/adapters/keejob_parsing.py",
+        "returncode": 1,
+        "stdout": "",
+        "stderr": "warning: in the working copy of 'src/coverage/adapters/keejob_parsing.py', LF will be replaced by CRLF the next time Git touches it\n"
+      },
+      {
+        "file": "src/coverage/adapters/parsing.py",
+        "returncode": 1,
+        "stdout": "",
+        "stderr": "warning: in the working copy of 'src/coverage/adapters/parsing.py', LF will be replaced by CRLF the next time Git touches it\n"
+      },
+      {
+        "file": "src/coverage/adapters/registry.py",
+        "returncode": 1,
+        "stdout": "",
+        "stderr": "warning: in the working copy of 'src/coverage/adapters/registry.py', LF will be replaced by CRLF the next time Git touches it\n"
+      },
+      {
+        "file": "src/coverage/adapters/tanitjobs.py",
+        "returncode": 1,
+        "stdout": "",
+        "stderr": "warning: in the working copy of 'src/coverage/adapters/tanitjobs.py', LF will be replaced by CRLF the next time Git touches it\n"
+      },
+      {
+        "file": "src/coverage/adapters/tunisietravail.py",
+        "returncode": 1,
+        "stdout": "",
+        "stderr": "warning: in the working copy of 'src/coverage/adapters/tunisietravail.py', LF will be replaced by CRLF the next time Git touches it\n"
+      },
+      {
+        "file": "src/coverage/diagnostics.py",
+        "returncode": 1,
+        "stdout": "",
+        "stderr": "warning: in the working copy of 'src/coverage/diagnostics.py', LF will be replaced by CRLF the next time Git touches it\n"
+      },
+      {
+        "file": "src/coverage/native_cli.py",
+        "returncode": 1,
+        "stdout": "",
+        "stderr": "warning: in the working copy of 'src/coverage/native_cli.py', LF will be replaced by CRLF the next time Git touches it\n"
+      },
+      {
+        "file": "src/coverage/record_outcomes.py",
+        "returncode": 1,
+        "stdout": "",
+        "stderr": "warning: in the working copy of 'src/coverage/record_outcomes.py', LF will be replaced by CRLF the next time Git touches it\n"
+      },
+      {
+        "file": "tests/fixtures/tn1/README.md",
+        "returncode": 1,
+        "stdout": "",
+        "stderr": "warning: in the working copy of 'tests/fixtures/tn1/README.md', LF will be replaced by CRLF the next time Git touches it\n"
+      },
+      {
+        "file": "tests/fixtures/tn1/keejob_detail.html",
+        "returncode": 1,
+        "stdout": "",
+        "stderr": ""
+      },
+      {
+        "file": "tests/fixtures/tn1/keejob_final.html",
+        "returncode": 1,
+        "stdout": "",
+        "stderr": ""
+      },
+      {
+        "file": "tests/fixtures/tn1/keejob_listing.html",
+        "returncode": 1,
+        "stdout": "",
+        "stderr": "warning: in the working copy of 'tests/fixtures/tn1/keejob_listing.html', LF will be replaced by CRLF the next time Git touches it\n"
+      },
+      {
+        "file": "tests/fixtures/tn1/malformed.html",
+        "returncode": 1,
+        "stdout": "",
+        "stderr": ""
+      },
+      {
+        "file": "tests/fixtures/tn1/tanit_challenge.html",
+        "returncode": 1,
+        "stdout": "",
+        "stderr": ""
+      },
+      {
+        "file": "tests/fixtures/tn1/tanit_detail.html",
+        "returncode": 1,
+        "stdout": "",
+        "stderr": ""
+      },
+      {
+        "file": "tests/fixtures/tn1/tanit_listing.html",
+        "returncode": 1,
+        "stdout": "",
+        "stderr": ""
+      },
+      {
+        "file": "tests/fixtures/tn1/travail_archive.html",
+        "returncode": 1,
+        "stdout": "",
+        "stderr": ""
+      },
+      {
+        "file": "tests/fixtures/tn1/travail_links.html",
+        "returncode": 1,
+        "stdout": "",
+        "stderr": ""
+      },
+      {
+        "file": "tests/fixtures/tn1/travail_multi.html",
+        "returncode": 1,
+        "stdout": "",
+        "stderr": ""
+      },
+      {
+        "file": "tests/fixtures/tn1/travail_single.html",
+        "returncode": 1,
+        "stdout": "",
+        "stderr": ""
+      },
+      {
+        "file": "tests/test_coverage_native_cli.py",
+        "returncode": 1,
+        "stdout": "",
+        "stderr": "warning: in the working copy of 'tests/test_coverage_native_cli.py', LF will be replaced by CRLF the next time Git touches it\n"
+      },
+      {
+        "file": "tests/test_coverage_native_http.py",
+        "returncode": 1,
+        "stdout": "",
+        "stderr": "warning: in the working copy of 'tests/test_coverage_native_http.py', LF will be replaced by CRLF the next time Git touches it\n"
+      },
+      {
+        "file": "tests/test_coverage_native_integration.py",
+        "returncode": 1,
+        "stdout": "",
+        "stderr": "warning: in the working copy of 'tests/test_coverage_native_integration.py', LF will be replaced by CRLF the next time Git touches it\n"
+      },
+      {
+        "file": "tests/test_coverage_native_parsers.py",
+        "returncode": 1,
+        "stdout": "",
+        "stderr": "warning: in the working copy of 'tests/test_coverage_native_parsers.py', LF will be replaced by CRLF the next time Git touches it\n"
+      },
+      {
+        "file": "src/coverage/contracts.py",
+        "returncode": 1,
+        "stdout": "",
+        "stderr": "warning: in the working copy of 'src/coverage/contracts.py', LF will be replaced by CRLF the next time Git touches it\n"
+      },
+      {
+        "file": "src/coverage/dedupe.py",
+        "returncode": 1,
+        "stdout": "",
+        "stderr": "warning: in the working copy of 'src/coverage/dedupe.py', LF will be replaced by CRLF the next time Git touches it\n"
+      },
+      {
+        "file": "src/coverage/importer.py",
+        "returncode": 1,
+        "stdout": "",
+        "stderr": "warning: in the working copy of 'src/coverage/importer.py', LF will be replaced by CRLF the next time Git touches it\n"
+      },
+      {
+        "file": "src/coverage/normalization.py",
+        "returncode": 1,
+        "stdout": "",
+        "stderr": "warning: in the working copy of 'src/coverage/normalization.py', LF will be replaced by CRLF the next time Git touches it\n"
+      },
+      {
+        "file": "src/coverage/service.py",
+        "returncode": 1,
+        "stdout": "",
+        "stderr": "warning: in the working copy of 'src/coverage/service.py', LF will be replaced by CRLF the next time Git touches it\n"
+      },
+      {
+        "file": "src/coverage/__main__.py",
+        "returncode": 1,
+        "stdout": "",
+        "stderr": "warning: in the working copy of 'src/coverage/__main__.py', LF will be replaced by CRLF the next time Git touches it\n"
+      }
+    ],
+    "findings": [],
+    "interpretation": "Exit 1 denotes no-index differences from NUL. No whitespace diagnostics; LF/CRLF notices are informational."
+  }
+}

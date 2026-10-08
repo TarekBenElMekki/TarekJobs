@@ -1,0 +1,177 @@
+{
+  "commands": [
+    {
+      "command": [
+        "C:\\Users\\tarek\\Projects\\TarekJobs\\.venv\\Scripts\\python.exe",
+        "-m",
+        "src.coverage",
+        "--db",
+        "C:\\Users\\tarek\\AppData\\Local\\Temp\\tarekjobs_tn0_cli_3bzss9bv\\scratch.db",
+        "init-scratch"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "C:\\Users\\tarek\\Projects\\TarekJobs\\.venv\\Scripts\\python.exe",
+        "-m",
+        "src.coverage",
+        "--db",
+        "C:\\Users\\tarek\\AppData\\Local\\Temp\\tarekjobs_tn0_cli_3bzss9bv\\scratch.db",
+        "register-source",
+        "--fixture",
+        "tests/fixtures/coverage/success.jsonl"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "C:\\Users\\tarek\\Projects\\TarekJobs\\.venv\\Scripts\\python.exe",
+        "-m",
+        "src.coverage",
+        "--db",
+        "C:\\Users\\tarek\\AppData\\Local\\Temp\\tarekjobs_tn0_cli_3bzss9bv\\scratch.db",
+        "list-sources"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "C:\\Users\\tarek\\Projects\\TarekJobs\\.venv\\Scripts\\python.exe",
+        "-m",
+        "src.coverage",
+        "--db",
+        "C:\\Users\\tarek\\AppData\\Local\\Temp\\tarekjobs_tn0_cli_3bzss9bv\\scratch.db",
+        "start",
+        "--fixture",
+        "tests/fixtures/coverage/success.jsonl",
+        "--artifacts",
+        "C:\\Users\\tarek\\AppData\\Local\\Temp\\tarekjobs_tn0_cli_3bzss9bv\\artifacts",
+        "--dry-run"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "C:\\Users\\tarek\\Projects\\TarekJobs\\.venv\\Scripts\\python.exe",
+        "-m",
+        "src.coverage",
+        "--db",
+        "C:\\Users\\tarek\\AppData\\Local\\Temp\\tarekjobs_tn0_cli_3bzss9bv\\scratch.db",
+        "start",
+        "--fixture",
+        "tests/fixtures/coverage/success.jsonl",
+        "--artifacts",
+        "C:\\Users\\tarek\\AppData\\Local\\Temp\\tarekjobs_tn0_cli_3bzss9bv\\artifacts",
+        "--max-pages",
+        "1"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "C:\\Users\\tarek\\Projects\\TarekJobs\\.venv\\Scripts\\python.exe",
+        "-m",
+        "src.coverage",
+        "--db",
+        "C:\\Users\\tarek\\AppData\\Local\\Temp\\tarekjobs_tn0_cli_3bzss9bv\\scratch.db",
+        "resume",
+        "718195dca3c54e7f9ca0cbdc5a4b23bc",
+        "--fixture",
+        "tests/fixtures/coverage/success.jsonl"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "C:\\Users\\tarek\\Projects\\TarekJobs\\.venv\\Scripts\\python.exe",
+        "-m",
+        "src.coverage",
+        "--db",
+        "C:\\Users\\tarek\\AppData\\Local\\Temp\\tarekjobs_tn0_cli_3bzss9bv\\scratch.db",
+        "run",
+        "718195dca3c54e7f9ca0cbdc5a4b23bc"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "C:\\Users\\tarek\\Projects\\TarekJobs\\.venv\\Scripts\\python.exe",
+        "-m",
+        "src.coverage",
+        "--db",
+        "C:\\Users\\tarek\\AppData\\Local\\Temp\\tarekjobs_tn0_cli_3bzss9bv\\scratch.db",
+        "receipt",
+        "718195dca3c54e7f9ca0cbdc5a4b23bc"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "C:\\Users\\tarek\\Projects\\TarekJobs\\.venv\\Scripts\\python.exe",
+        "-m",
+        "src.coverage",
+        "--db",
+        "C:\\Users\\tarek\\AppData\\Local\\Temp\\tarekjobs_tn0_cli_3bzss9bv\\scratch.db",
+        "needs-scoring",
+        "718195dca3c54e7f9ca0cbdc5a4b23bc"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "C:\\Users\\tarek\\Projects\\TarekJobs\\.venv\\Scripts\\python.exe",
+        "-m",
+        "src.coverage",
+        "--db",
+        "C:\\Users\\tarek\\AppData\\Local\\Temp\\tarekjobs_tn0_cli_3bzss9bv\\scratch.db",
+        "start",
+        "--fixture",
+        "tests/fixtures/coverage/cross_source.jsonl",
+        "--artifacts",
+        "C:\\Users\\tarek\\AppData\\Local\\Temp\\tarekjobs_tn0_cli_3bzss9bv\\artifacts"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "C:\\Users\\tarek\\Projects\\TarekJobs\\.venv\\Scripts\\python.exe",
+        "-m",
+        "src.coverage",
+        "--db",
+        "C:\\Users\\tarek\\AppData\\Local\\Temp\\tarekjobs_tn0_cli_3bzss9bv\\scratch.db",
+        "start",
+        "--fixture",
+        "tests/fixtures/coverage/detail_failure.jsonl",
+        "--artifacts",
+        "C:\\Users\\tarek\\AppData\\Local\\Temp\\tarekjobs_tn0_cli_3bzss9bv\\artifacts"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "C:\\Users\\tarek\\Projects\\TarekJobs\\.venv\\Scripts\\python.exe",
+        "-m",
+        "src.coverage",
+        "--db",
+        "C:\\Users\\tarek\\AppData\\Local\\Temp\\tarekjobs_tn0_cli_3bzss9bv\\scratch.db",
+        "status"
+      ],
+      "exit_code": 0
+    }
+  ],
+  "operations_passed": 12,
+  "success": {
+    "state": "exhausted",
+    "canonical_new": 2,
+    "duplicate_inventory": 1
+  },
+  "cross_source": {
+    "canonical_new": 0,
+    "canonical_reused": 1
+  },
+  "detail_failure": {
+    "state": "partial",
+    "failed": 1
+  }
+}
