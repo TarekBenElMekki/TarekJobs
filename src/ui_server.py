@@ -23,6 +23,7 @@ from sqlalchemy.orm import Session, selectinload
 from .database import JobORM, JobSourceORM, TteaAssessmentORM, TteaRunORM, get_engine, init_db
 from .production_write_guard import production_write_guard, ProductionWriteSafetyError, BLOCKED_MESSAGE
 from . import application_analytics as analytics
+from . import ttea_batch_import as canonical_batches
 from .application_assistant import (
     APPLICATION_STATES,
     ALLOWED_TRANSITIONS,
@@ -312,10 +313,39 @@ def _job_payload(job: JobORM, include_description: bool = False) -> dict:
             for source in (job.sources or [])
         ],
     }
+    canonical = canonical_batches.assessment_for_job(engine, job.id)
+    payload["canonical_assessment"] = canonical
+    if canonical and latest is None:
+        # Keep existing generic assessments and manual job fields untouched.
+        # The canonical snapshot remains independently visible in either case.
+        payload["score"] = {"value": canonical["original_model_score"], "origin": "ttea"}
+        payload["ttea_assessment"] = {
+            "score": canonical["original_model_score"], "strengths": canonical["strengths"],
+            "gaps": canonical["gaps"], "explanation": canonical["reasoning"],
+            "provider": canonical["scoring_provider"], "model": canonical["model"],
+            "run_id": _canonical_batch_id_for_job(job.id), "scored_at": canonical["scored_at"], "imported_at": None,
+        }
     if include_description:
         payload["description"] = job.description or ""
     return payload
 
+
+
+def _canonical_batch_id_for_job(job_id: int):
+    if not canonical_batches.available(engine):
+        return None
+
+    with engine.connect() as connection:
+        return connection.exec_driver_sql(
+            """
+            SELECT batch_id
+            FROM ttea_canonical_records
+            WHERE job_id = ?
+            ORDER BY batch_id DESC
+            LIMIT 1
+            """,
+            (job_id,),
+        ).scalar_one_or_none()
 
 
 # TTEA_NEW_AI_ACTIVE_POOL_V1
@@ -351,6 +381,12 @@ def _primary_score():
               .order_by(TteaAssessmentORM.scored_at.desc(), TteaAssessmentORM.imported_at.desc(),
                         TteaAssessmentORM.id.desc())
               .limit(1).correlate(JobORM).scalar_subquery())
+    if canonical_batches.available(engine):
+        canonical_score = literal_column(
+            "(SELECT json_extract(record_json, '$.original_model_score') "
+            "FROM ttea_canonical_records WHERE job_id=jobs.id ORDER BY batch_id DESC LIMIT 1)"
+        )
+        return func.coalesce(new_ai_score, latest, canonical_score, JobORM.overall_score)
     return func.coalesce(new_ai_score, latest, JobORM.overall_score)
 
 
@@ -1658,3 +1694,14 @@ def stop_run():
     if RUN_PROCESS is not None and RUN_PROCESS.poll() is None:
         RUN_PROCESS.terminate()
     return state
+
+
+@app.get("/api/ttea/batches/{batch_id}/jobs")
+def canonical_batch_jobs(batch_id: str, action_bucket: str | None = None,
+                         semantic_status: str | None = None,
+                         scoring_provider: str | None = None,
+                         assessment_version: str | None = None):
+    items = canonical_batches.query_batch(engine, batch_id, action_bucket=action_bucket,
+        semantic_status=semantic_status, scoring_provider=scoring_provider,
+        assessment_version=assessment_version)
+    return {"items": items, "total": len(items), "batch_id": batch_id}
